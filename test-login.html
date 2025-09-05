@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase Login</title>
+</head>
+<body>
+    <h2>Test Login</h2>
+    <form id="loginForm">
+        <input type="email" id="email" placeholder="Email" value="test@example.com" required>
+        <input type="password" id="password" placeholder="Password" value="123456" required>
+        <button type="submit">Login</button>
+    </form>
+    <div id="result"></div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js'
+        
+        const supabase = createClient(
+            'https://hnkcgtkrngldrtnsmzps.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhua2NndGtybmdsZHJ0bnNtenBzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMTQwMjUsImV4cCI6MjA3MjU5MDAyNX0.H0WzbCBuwx8luDIp4mHxzNFjxP1j2nzDj1pwMSzQbEQ'
+        )
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const email = document.getElementById('email').value
+            const password = document.getElementById('password').value
+            
+            console.log('Tentando login...', email)
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                })
+                
+                if (error) {
+                    throw error
+                }
+                
+                console.log('Login bem-sucedido:', data)
+                document.getElementById('result').innerHTML = `
+                    <h3>Login Successful!</h3>
+                    <p>User ID: ${data.user.id}</p>
+                    <p>Email: ${data.user.email}</p>
+                `
+            } catch (error) {
+                console.error('Erro no login:', error)
+                document.getElementById('result').innerHTML = `
+                    <h3>Login Error!</h3>
+                    <p>Error: ${error.message}</p>
+                `
+            }
+        })
+    </script>
+</body>
+</html>
