@@ -19,9 +19,10 @@ interface AppSidebarProps {
   onAppStoreOpen?: () => void;
   onSettingsOpen?: () => void;
   onNotificationsOpen?: () => void;
+  onModuleOpen?: (moduleUrl: string, moduleName: string) => void;
 }
 
-export function AppSidebar({ onToggle, onAppStoreOpen, onSettingsOpen, onNotificationsOpen }: AppSidebarProps) {
+export function AppSidebar({ onToggle, onAppStoreOpen, onSettingsOpen, onNotificationsOpen, onModuleOpen }: AppSidebarProps) {
   const { user, logout } = useAuth();
   const { unreadCount } = useNotifications();
 
@@ -66,7 +67,7 @@ export function AppSidebar({ onToggle, onAppStoreOpen, onSettingsOpen, onNotific
           </div>
           
           <SidebarGroupContent className="px-4 flex-1 overflow-auto">
-            <AnimatedAppGrid isSidebar={true} onAppStoreOpen={onAppStoreOpen} onSettingsOpen={onSettingsOpen} />
+            <AnimatedAppGrid isSidebar={true} onAppStoreOpen={onAppStoreOpen} onSettingsOpen={onSettingsOpen} onModuleOpen={onModuleOpen} />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

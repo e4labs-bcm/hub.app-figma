@@ -13,6 +13,8 @@ import { CompanySetupPage } from "./components/CompanySetupPage";
 import { AppStore } from "./components/AppStore";
 import { SettingsPage } from "./components/SettingsPage";
 import { NotificationCenter } from "./components/NotificationCenter";
+import { ModuleViewer } from "./components/ModuleViewer";
+import { updateMultiFinsModule, checkMultiFinsModule, fixMultiFinsURL } from "./utils/updateMultiFins";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import {
   SettingsProvider,
@@ -27,6 +29,8 @@ function AppContent() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
+  const [isModuleViewerOpen, setIsModuleViewerOpen] = useState(false);
+  const [currentModule, setCurrentModule] = useState({ url: '', name: '' });
 
   // Safe hook usage with error boundaries
   const auth = useAuth();
@@ -55,12 +59,33 @@ function AppContent() {
 
     checkIsMobile();
     window.addEventListener("resize", checkIsMobile);
+    
+    // Expor funções para debug no console
+    (window as any).updateMultiFinsModule = updateMultiFinsModule;
+    (window as any).checkMultiFinsModule = checkMultiFinsModule;
+    (window as any).fixMultiFinsURL = fixMultiFinsURL;
+    
+    console.log('🔧 DEBUG: Execute window.checkMultiFinsModule() para verificar o módulo atual');
+    console.log('🔧 DEBUG: Execute window.fixMultiFinsURL() para corrigir URL do MultiFins');
+    
     return () =>
       window.removeEventListener("resize", checkIsMobile);
   }, []);
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
+  };
+
+  const handleModuleOpen = (moduleUrl: string, moduleName: string) => {
+    console.log('🚀 DEBUG: handleModuleOpen chamado:', { moduleUrl, moduleName });
+    setCurrentModule({ url: moduleUrl, name: moduleName });
+    setIsModuleViewerOpen(true);
+    console.log('🚀 DEBUG: Estados atualizados - isModuleViewerOpen: true');
+  };
+
+  const handleModuleClose = () => {
+    setIsModuleViewerOpen(false);
+    setCurrentModule({ url: '', name: '' });
   };
 
   // Show loading screen while checking authentication
@@ -92,6 +117,7 @@ function AppContent() {
         onAppStoreOpen={openAppStore}
         onSettingsOpen={openSettings}
         onNotificationsOpen={() => setIsNotificationCenterOpen(true)}
+        onModuleOpen={handleModuleOpen}
       >
         {/* Mobile Layout Content */}
         <motion.div
@@ -173,6 +199,7 @@ function AppContent() {
                 <AnimatedAppGrid
                   onAppStoreOpen={openAppStore}
                   onSettingsOpen={openSettings}
+                  onModuleOpen={handleModuleOpen}
                 />
               </div>
             </motion.div>
@@ -254,7 +281,17 @@ function AppContent() {
           onClose={() => setIsNotificationCenterOpen(false)}
           isMobile={isMobile}
         />
+
       </ResponsiveLayout>
+      
+      {/* Module Viewer - precisa estar fora para mobile, mas funcionar dentro no desktop */}
+      <ModuleViewer
+        isOpen={isModuleViewerOpen}
+        onClose={handleModuleClose}
+        moduleUrl={currentModule.url}
+        moduleName={currentModule.name}
+        showSidebar={showSidebar}
+      />
     </>
   );
 }

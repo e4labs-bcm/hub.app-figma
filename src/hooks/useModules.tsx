@@ -74,7 +74,8 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
             preco_mensal,
             desenvolvedor,
             avaliacao_media,
-            status
+            status,
+            link_destino
           )
         `)
         .eq('tenant_id', tenant.id)
@@ -116,6 +117,7 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
           downloads: "1K+", // Valor padrão
           size: "10 MB", // Valor padrão
           status: module.status,
+          link_destino: module.link_destino,
           installed_at: item.data_instalacao,
           module_status: item.status
         };

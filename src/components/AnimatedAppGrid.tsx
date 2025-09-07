@@ -45,9 +45,10 @@ interface AnimatedAppGridProps {
   isSidebar?: boolean;
   onAppStoreOpen?: () => void;
   onSettingsOpen?: () => void;
+  onModuleOpen?: (moduleUrl: string, moduleName: string) => void;
 }
 
-export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsOpen }: AnimatedAppGridProps) {
+export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsOpen, onModuleOpen }: AnimatedAppGridProps) {
   const [isDesktop, setIsDesktop] = useState(false);
   const { modules, isLoading: modulesLoading } = useModules();
   const { hasPermission } = usePermissions();
@@ -131,11 +132,18 @@ export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsO
         label: module.nome,
         bgColor: getCategoryColor(module.categoria),
         onClick: () => {
-          if (module.link_destino) {
-            // Abrir módulo externo em nova aba
+          console.log('🔍 DEBUG: Clicou no módulo:', module.nome);
+          console.log('🔍 DEBUG: Link destino:', module.link_destino);
+          console.log('🔍 DEBUG: onModuleOpen existe?', !!onModuleOpen);
+          
+          if (module.link_destino && onModuleOpen) {
+            console.log('✅ DEBUG: Abrindo módulo no viewer interno');
+            onModuleOpen(module.link_destino, module.nome);
+          } else if (module.link_destino) {
+            console.log('⚠️ DEBUG: Fallback - abrindo em nova aba');
             window.open(module.link_destino, '_blank');
           } else {
-            // Para módulos internos, navegar internamente (implementar depois)
+            console.log('ℹ️ DEBUG: Módulo interno - não implementado ainda');
             console.log(`Abrir módulo interno: ${module.nome}`);
           }
         }

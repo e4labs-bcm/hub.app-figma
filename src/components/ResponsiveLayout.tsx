@@ -9,9 +9,10 @@ interface ResponsiveLayoutProps {
   onAppStoreOpen?: () => void;
   onSettingsOpen?: () => void;
   onNotificationsOpen?: () => void;
+  onModuleOpen?: (moduleUrl: string, moduleName: string) => void;
 }
 
-export function ResponsiveLayout({ children, showSidebar = true, onToggleSidebar, onAppStoreOpen, onSettingsOpen, onNotificationsOpen }: ResponsiveLayoutProps) {
+export function ResponsiveLayout({ children, showSidebar = true, onToggleSidebar, onAppStoreOpen, onSettingsOpen, onNotificationsOpen, onModuleOpen }: ResponsiveLayoutProps) {
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <AnimatePresence>
@@ -46,7 +47,7 @@ export function ResponsiveLayout({ children, showSidebar = true, onToggleSidebar
                   exit={{ x: -300, opacity: 0 }}
                   transition={{ duration: 0.4, ease: "easeInOut" }}
                 >
-                  <AppSidebar onToggle={onToggleSidebar} onAppStoreOpen={onAppStoreOpen} onSettingsOpen={onSettingsOpen} onNotificationsOpen={onNotificationsOpen} />
+                  <AppSidebar onToggle={onToggleSidebar} onAppStoreOpen={onAppStoreOpen} onSettingsOpen={onSettingsOpen} onNotificationsOpen={onNotificationsOpen} onModuleOpen={onModuleOpen} />
                 </motion.div>
               )}
             </AnimatePresence>
