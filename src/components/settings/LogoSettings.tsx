@@ -8,6 +8,7 @@ import { Switch } from '../ui/switch';
 import { Slider } from '../ui/slider';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import { useSettings } from '../../hooks/useSettings';
+import backgroundImage from '../../assets/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png';
 
 export function LogoSettings() {
   const { logo, updateLogo } = useSettings();
@@ -311,7 +312,7 @@ export function LogoSettings() {
           <div className="relative w-full max-w-sm h-96 rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
             {/* Simulated mobile screen */}
             <div className="w-full h-full bg-cover bg-center relative" 
-                 style={{ backgroundImage: 'url(figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png)' }}>
+                 style={{ backgroundImage: `url(${backgroundImage})` }}>
               <div className="absolute inset-0 bg-black/20" />
               <div className="relative z-10 flex flex-col h-full">
                 <div className="flex justify-center pt-16 pb-8">

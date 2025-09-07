@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Slider } from '../ui/slider';
 import { Input } from '../ui/input';
 import { useSettings } from '../../hooks/useSettings';
+import backgroundImage from '../../assets/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png';
 
 export function BackgroundSettings() {
   const { background, updateBackground } = useSettings();
@@ -310,7 +311,7 @@ export function BackgroundSettings() {
         <Button
           variant="outline"
           onClick={() => updateBackground({
-            image: 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png',
+            image: backgroundImage,
             position: 'center',
             size: 'cover',
             opacity: 1

@@ -14,7 +14,7 @@ interface ResponsiveLayoutProps {
 export function ResponsiveLayout({ children, showSidebar = true, onToggleSidebar, onAppStoreOpen, onSettingsOpen, onNotificationsOpen }: ResponsiveLayoutProps) {
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {/* Mobile Layout */}
         <motion.div 
           key="mobile"
@@ -37,7 +37,7 @@ export function ResponsiveLayout({ children, showSidebar = true, onToggleSidebar
           transition={{ duration: 0.3 }}
         >
           <SidebarProvider>
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {showSidebar && (
                 <motion.div
                   key="sidebar"

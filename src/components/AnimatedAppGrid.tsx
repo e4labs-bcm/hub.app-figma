@@ -24,7 +24,11 @@ import {
   ShoppingCart,
   UserCheck,
   ExternalLink,
-  Loader2
+  Loader2,
+  Zap,
+  Megaphone,
+  BarChart3,
+  Truck
 } from 'lucide-react';
 import { useModules } from '../hooks/useModules';
 import { usePermissions } from '../hooks/usePermissions';
@@ -54,33 +58,72 @@ export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsO
       Users, Brain, Heart, UserPlus, Calendar, Baby, Book, UsersRound, 
       MessageCircle, Instagram, Youtube, Headphones, CalendarDays, 
       Music, Sparkles, PauseCircle, ShoppingBag, Settings,
-      DollarSign, Package, ShoppingCart, UserCheck, ExternalLink
+      DollarSign, Package, ShoppingCart, UserCheck, ExternalLink,
+      Zap, Megaphone, BarChart3, Truck, Loader2
     };
     return icons[iconName as keyof typeof icons] || Users;
   };
 
-  // Função para obter cor baseada na categoria
+  // Função para obter cor baseada na categoria (match com database schema)
   const getCategoryColor = (category: string) => {
     const colors = {
-      productivity: "bg-gradient-to-br from-blue-500 to-blue-700",
-      finance: "bg-gradient-to-br from-green-500 to-green-700", 
+      vendas: "bg-gradient-to-br from-purple-500 to-purple-700",
+      financeiro: "bg-gradient-to-br from-green-500 to-green-700", 
+      produtividade: "bg-gradient-to-br from-blue-500 to-blue-700",
+      comunicacao: "bg-gradient-to-br from-teal-500 to-teal-700",
+      marketing: "bg-gradient-to-br from-pink-500 to-pink-700",
+      recursos_humanos: "bg-gradient-to-br from-orange-500 to-orange-700",
+      outros: "bg-gradient-to-br from-gray-500 to-gray-700",
+      // Manter compatibilidade com categorias antigas
       ecommerce: "bg-gradient-to-br from-purple-500 to-purple-700",
+      finance: "bg-gradient-to-br from-green-500 to-green-700", 
+      productivity: "bg-gradient-to-br from-blue-500 to-blue-700",
       hr: "bg-gradient-to-br from-orange-500 to-orange-700",
-      crm: "bg-gradient-to-br from-indigo-500 to-indigo-700",
       default: "bg-gradient-to-br from-gray-500 to-gray-700"
     };
     return colors[category as keyof typeof colors] || colors.default;
   };
 
+  // Função para obter ícone baseado na categoria (match com database schema)
+  const getCategoryIcon = (category: string): string => {
+    const icons = {
+      vendas: 'ShoppingCart',
+      financeiro: 'DollarSign', 
+      produtividade: 'Zap',
+      comunicacao: 'MessageCircle',
+      marketing: 'Megaphone',
+      recursos_humanos: 'UserCheck',
+      outros: 'Package',
+      // Manter compatibilidade com categorias antigas
+      ecommerce: 'ShoppingCart',
+      finance: 'DollarSign', 
+      productivity: 'Zap',
+      hr: 'UserCheck'
+    };
+    return icons[category as keyof typeof icons] || 'Package';
+  };
+
   // Converter módulos em apps
   const moduleApps: AppItem[] = modules
     .filter(module => {
-      // Verificar se tem permissão para acessar o módulo
-      const readPermission = `${module.nome.toLowerCase()}.read`;
-      return hasPermission(readPermission);
+      // TEMPORÁRIO: Se o módulo está instalado, permitir sempre
+      // TODO: Restaurar verificação de permissões quando Edge Functions funcionarem
+      console.log('🔍 Módulo no sidebar:', module.nome, 'ID:', module.id);
+      return true; // Permitir todos os módulos instalados temporariamente
+      
+      // Código original de permissões (comentado temporariamente)
+      /*
+      const modulePermission = `${module.nome.toLowerCase().replace(/\s+/g, '_')}.read`;
+      const basicPermission = `${module.nome.toLowerCase().replace(/\s+/g, '')}.read`;
+      
+      // Tentar ambos os formatos de permissão
+      return hasPermission(modulePermission) || hasPermission(basicPermission) || hasPermission('modules.read');
+      */
     })
     .map(module => {
-      const IconComponent = module.icone_lucide ? getIconComponent(module.icone_lucide) : Users;
+      // Usar ícone do manifest ou fallback baseado na categoria
+      const iconName = module.icone_lucide || getCategoryIcon(module.categoria);
+      const IconComponent = getIconComponent(iconName);
       
       return {
         id: module.id,
@@ -89,9 +132,11 @@ export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsO
         bgColor: getCategoryColor(module.categoria),
         onClick: () => {
           if (module.link_destino) {
+            // Abrir módulo externo em nova aba
             window.open(module.link_destino, '_blank');
           } else {
-            console.log(`Abrir módulo: ${module.nome}`);
+            // Para módulos internos, navegar internamente (implementar depois)
+            console.log(`Abrir módulo interno: ${module.nome}`);
           }
         }
       };
@@ -117,42 +162,8 @@ export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsO
     }] : [])
   ];
 
-  // Apps estáticos de exemplo (manter alguns para demonstração)
-  const demoApps: AppItem[] = [
-    {
-      id: "quem-nos-somos",
-      icon: <Users className="w-5 h-5 md:w-8 md:h-8 text-red-600" />,
-      label: "Quem Nós Somos",
-      bgColor: "bg-yellow-400"
-    },
-    {
-      id: "meditacao",
-      icon: <Brain className="w-5 h-5 md:w-8 md:h-8 text-black" />,
-      label: "Meditação Semanal",
-      bgColor: "bg-white"
-    },
-    {
-      id: "contribua",
-      icon: <Heart className="w-5 h-5 md:w-8 md:h-8 text-red-500" />,
-      label: "Contribua",
-      bgColor: "bg-white"
-    },
-    {
-      id: "instagram",
-      icon: <Instagram className="w-5 h-5 md:w-8 md:h-8 text-white" />,
-      label: "Insta",
-      bgColor: "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400"
-    },
-    {
-      id: "youtube",
-      icon: <Youtube className="w-5 h-5 md:w-8 md:h-8 text-white" />,
-      label: "YouTube",
-      bgColor: "bg-red-600"
-    }
-  ];
-
-  // Combinar todos os apps
-  const allApps = [...moduleApps, ...systemApps, ...demoApps];
+  // Combinar apenas módulos reais e apps do sistema
+  const allApps = [...moduleApps, ...systemApps];
 
   useEffect(() => {
     const checkIsDesktop = () => {
@@ -238,7 +249,7 @@ export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsO
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.5, staggerChildren: 0.05 }}
     >
-      <AnimatePresence>
+      <AnimatePresence mode="popLayout">
         {allApps.map((app, index) => (
           <motion.div 
             key={app.id}

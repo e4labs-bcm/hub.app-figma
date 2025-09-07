@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { projectId, publicAnonKey } from '../utils/supabase/info';
 import { useAuth } from './useAuth';
+import { supabase } from '../lib/supabase';
 
 interface Module {
   id: string;
@@ -52,25 +53,77 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
     
     try {
       setError(null);
-      console.log('Carregando módulos ativos do tenant:', tenant.id);
+      console.log('📦 DIRETO DO SUPABASE: Carregando módulos instalados do tenant:', tenant.id);
 
-      const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-d3150113/modules/active`, {
-        headers: {
-          'Authorization': `Bearer ${publicAnonKey}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      // Query direta ao Supabase para buscar módulos instalados
+      const { data: installedModules, error } = await supabase
+        .from('tenants_modulos')
+        .select(`
+          data_instalacao,
+          status,
+          modulos (
+            id,
+            nome,
+            slug,
+            descricao,
+            descricao_longa,
+            icone_url,
+            manifest,
+            categoria,
+            is_free,
+            preco_mensal,
+            desenvolvedor,
+            avaliacao_media,
+            status
+          )
+        `)
+        .eq('tenant_id', tenant.id)
+        .eq('status', 'active');
 
-      if (!response.ok) {
-        throw new Error(`Erro ao carregar módulos: ${response.status}`);
+      if (error) {
+        throw new Error(error.message);
       }
 
-      const { modules: activeModules } = await response.json();
-      console.log('Módulos ativos carregados:', activeModules?.length || 0);
+      console.log('📦 Módulos instalados carregados:', installedModules?.length || 0);
+
+      // Converter para formato esperado
+      const formattedModules = (installedModules || []).map(item => {
+        const module = item.modulos;
+        
+        // Extrair ícone do manifest se disponível
+        let iconName = 'Package'; // fallback
+        if (module.manifest) {
+          try {
+            const manifest = typeof module.manifest === 'string' 
+              ? JSON.parse(module.manifest) 
+              : module.manifest;
+            iconName = manifest.icon || 'Package';
+          } catch (e) {
+            console.warn('Erro ao parsear manifest do módulo:', module.nome);
+          }
+        }
+
+        return {
+          id: module.id,
+          nome: module.nome,
+          descricao: module.descricao || module.descricao_longa,
+          icone_lucide: iconName,
+          categoria: module.categoria,
+          is_free: module.is_free,
+          preco: module.preco_mensal,
+          developer: module.desenvolvedor || "Hub.App Team",
+          rating: module.avaliacao_media || 4.5,
+          downloads: "1K+", // Valor padrão
+          size: "10 MB", // Valor padrão
+          status: module.status,
+          installed_at: item.data_instalacao,
+          module_status: item.status
+        };
+      });
       
-      setModules(activeModules || []);
+      setModules(formattedModules);
     } catch (error) {
-      console.error('Erro ao carregar módulos ativos:', error);
+      console.error('❌ Erro ao carregar módulos ativos:', error);
       setError('Erro ao carregar módulos instalados');
       setModules([]);
     }
@@ -78,28 +131,77 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
 
   // Carregar módulos disponíveis para instalação
   const loadAvailableModules = async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !tenant) return;
     
     try {
-      console.log('Carregando módulos disponíveis...');
+      console.log('🛍️ DIRETO DO SUPABASE: Carregando módulos disponíveis...');
 
-      const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-d3150113/modules/available`, {
-        headers: {
-          'Authorization': `Bearer ${publicAnonKey}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      // Primeiro, buscar IDs dos módulos já instalados
+      const { data: installedModulesData, error: installedError } = await supabase
+        .from('tenants_modulos')
+        .select('modulo_id')
+        .eq('tenant_id', tenant.id)
+        .eq('status', 'active');
 
-      if (!response.ok) {
-        throw new Error(`Erro ao carregar módulos disponíveis: ${response.status}`);
+      if (installedError) {
+        throw new Error(installedError.message);
       }
 
-      const { modules: available } = await response.json();
-      console.log('Módulos disponíveis carregados:', available?.length || 0);
+      const installedIds = installedModulesData?.map(item => item.modulo_id) || [];
+      console.log('📦 IDs de módulos já instalados:', installedIds);
+
+      // Buscar todos os módulos ativos
+      const { data: allModules, error } = await supabase
+        .from('modulos')
+        .select('*')
+        .eq('status', 'active');
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // Filtrar módulos não instalados no JavaScript
+      const availableModules = (allModules || []).filter(module => 
+        !installedIds.includes(module.id)
+      );
+
+      console.log('🛍️ Total de módulos no banco:', allModules?.length || 0);
+      console.log('🛍️ Módulos disponíveis (após filtro):', availableModules?.length || 0);
+
+      // Converter para formato esperado
+      const formattedModules = (availableModules || []).map(module => {
+        // Extrair ícone do manifest se disponível
+        let iconName = 'Package'; // fallback
+        if (module.manifest) {
+          try {
+            const manifest = typeof module.manifest === 'string' 
+              ? JSON.parse(module.manifest) 
+              : module.manifest;
+            iconName = manifest.icon || 'Package';
+          } catch (e) {
+            console.warn('Erro ao parsear manifest do módulo:', module.nome);
+          }
+        }
+
+        return {
+          id: module.id,
+          nome: module.nome,
+          descricao: module.descricao || module.descricao_longa,
+          icone_lucide: iconName,
+          categoria: module.categoria,
+          is_free: module.is_free,
+          preco: module.preco_mensal,
+          developer: module.desenvolvedor || "Hub.App Team",
+          rating: module.avaliacao_media || 4.5,
+          downloads: "1K+", // Valor padrão
+          size: "10 MB", // Valor padrão
+          status: module.status
+        };
+      });
       
-      setAvailableModules(available || []);
+      setAvailableModules(formattedModules);
     } catch (error) {
-      console.error('Erro ao carregar módulos disponíveis:', error);
+      console.error('❌ Erro ao carregar módulos disponíveis:', error);
       setError('Erro ao carregar módulos disponíveis');
       setAvailableModules([]);
     }
@@ -113,33 +215,33 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
 
     try {
       setError(null);
-      console.log('Instalando módulo:', moduleId);
+      console.log('💾 DIRETO NO SUPABASE: Instalando módulo:', moduleId);
 
-      const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-d3150113/modules/install`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${publicAnonKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          module_id: moduleId,
-          tenant_id: tenant.id
+      // Inserir na tabela tenants_modulos
+      const { data, error } = await supabase
+        .from('tenants_modulos')
+        .insert({
+          tenant_id: tenant.id,
+          modulo_id: moduleId,
+          status: 'active',
+          data_instalacao: new Date().toISOString()
         })
-      });
+        .select();
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao instalar módulo');
+      if (error) {
+        if (error.code === '23505') {
+          throw new Error('Este módulo já está instalado');
+        }
+        throw new Error(error.message);
       }
 
-      const result = await response.json();
-      console.log('Módulo instalado com sucesso:', result);
+      console.log('✅ Módulo instalado no banco de dados:', data);
       
-      // Recarregar listas
+      // Recarregar listas para refletir as mudanças
       await Promise.all([loadActiveModules(), loadAvailableModules()]);
       
     } catch (error) {
-      console.error('Erro ao instalar módulo:', error);
+      console.error('❌ Erro ao instalar módulo:', error);
       setError(error instanceof Error ? error.message : 'Erro ao instalar módulo');
       throw error;
     }
@@ -153,32 +255,26 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
 
     try {
       setError(null);
-      console.log('Desinstalando módulo:', moduleId);
+      console.log('💾 DIRETO NO SUPABASE: Desinstalando módulo:', moduleId);
 
-      const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-d3150113/modules/uninstall`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${publicAnonKey}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          module_id: moduleId,
-          tenant_id: tenant.id
-        })
-      });
+      // Remover da tabela tenants_modulos
+      const { error } = await supabase
+        .from('tenants_modulos')
+        .delete()
+        .eq('tenant_id', tenant.id)
+        .eq('modulo_id', moduleId);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao desinstalar módulo');
+      if (error) {
+        throw new Error(error.message);
       }
 
-      console.log('Módulo desinstalado com sucesso');
+      console.log('✅ Módulo desinstalado do banco de dados');
       
-      // Recarregar listas
+      // Recarregar listas para refletir as mudanças
       await Promise.all([loadActiveModules(), loadAvailableModules()]);
       
     } catch (error) {
-      console.error('Erro ao desinstalar módulo:', error);
+      console.error('❌ Erro ao desinstalar módulo:', error);
       setError(error instanceof Error ? error.message : 'Erro ao desinstalar módulo');
       throw error;
     }

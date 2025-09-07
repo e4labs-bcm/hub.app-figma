@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { PanelLeft } from "lucide-react";
-import backgroundImage from "figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png";
+import backgroundImage from "./assets/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png";
 import { AnimatedAppGrid } from "./components/AnimatedAppGrid";
 import { EventBanner } from "./components/EventBanner";
 import { ResponsiveLayout } from "./components/ResponsiveLayout";

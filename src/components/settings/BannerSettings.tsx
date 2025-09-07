@@ -7,6 +7,7 @@ import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useSettings } from '../../hooks/useSettings';
+import backgroundImage from '../../assets/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png';
 
 export function BannerSettings() {
   const { banner, updateBanner } = useSettings();
@@ -59,7 +60,7 @@ export function BannerSettings() {
 
   const handleUnsplashPreset = (preset: string) => {
     const presets = {
-      'rio-sugarloaf': 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png',
+      'rio-sugarloaf': backgroundImage,
       'family-celebration': 'https://images.unsplash.com/photo-1731596153022-4cedafe3330a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmYW1pbHklMjBjZWxlYnJhdGlvbiUyMHBhcnR5fGVufDF8fHx8MTc1NjgxNDg1NXww&ixlib=rb-4.1.0&q=80&w=1080',
       'sunset-beach': 'https://images.unsplash.com/photo-1682502922918-fed575428e3c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdW5zZXQlMjBiZWFjaCUyMHRyb3BpY2FsfGVufDF8fHx8MTc1NjgxNDg1OXww&ixlib=rb-4.1.0&q=80&w=1080',
       'mountain-landscape': 'https://images.unsplash.com/photo-1596693097925-9d818cc9692d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3VudGFpbiUyMGxhbmRzY2FwZSUyMHNjZW5pY3xlbnwxfHx8fDE3NTY2OTg1MzV8MA&ixlib=rb-4.1.0&q=80&w=1080',
@@ -217,7 +218,7 @@ export function BannerSettings() {
                 enabled: true,
                 title: 'CELEBRAÇÃO',
                 subtitle: 'Momentos especiais em família',
-                imageUrl: 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png'
+                imageUrl: backgroundImage
               })}
               className="w-full flex items-center gap-2"
             >
@@ -234,7 +235,7 @@ export function BannerSettings() {
           <div className="relative w-full max-w-sm h-96 rounded-lg overflow-hidden">
             {/* Simulated mobile screen */}
             <div className="w-full h-full bg-cover bg-center relative" 
-                 style={{ backgroundImage: 'url(figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png)' }}>
+                 style={{ backgroundImage: `url(${backgroundImage})` }}>
               <div className="absolute inset-0 bg-black/20" />
               <div className="relative z-10 flex flex-col h-full">
                 {/* Header */}

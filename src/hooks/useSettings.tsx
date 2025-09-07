@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import backgroundImage from '../assets/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png';
 
 interface BackgroundSettings {
   image: string;
@@ -69,7 +70,7 @@ interface SettingsContextType {
 
 const defaultSettings: Omit<SettingsContextType, 'updateBackground' | 'updateLogo' | 'updateBanner' | 'updateAccessControl' | 'updatePushSettings' | 'updateUserProfile' | 'resetToDefaults'> = {
   background: {
-    image: 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png',
+    image: backgroundImage,
     position: 'center',
     size: 'cover',
     opacity: 1
@@ -87,7 +88,7 @@ const defaultSettings: Omit<SettingsContextType, 'updateBackground' | 'updateLog
     enabled: true,
     title: 'CELEBRAÇÃO',
     subtitle: 'Momentos especiais em família',
-    imageUrl: 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png'
+    imageUrl: backgroundImage
   },
   accessControl: {
     modules: {
@@ -164,7 +165,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
               ...settings.background,
               // Keep the image reference if it's a figma asset, remove if it's base64
               image: settings.background.image.startsWith('data:') 
-                ? 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png' 
+                ? backgroundImage 
                 : settings.background.image
             },
             logo: {
@@ -178,7 +179,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
               ...settings.banner,
               // Remove base64 image data for banner as well
               imageUrl: settings.banner.imageUrl.startsWith('data:') 
-                ? 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png' 
+                ? backgroundImage 
                 : settings.banner.imageUrl
             }
           };
@@ -200,7 +201,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
               ...settings,
               background: {
                 ...settings.background,
-                image: 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png'
+                image: backgroundImage
               },
               logo: {
                 ...settings.logo,
@@ -208,7 +209,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
               },
               banner: {
                 ...settings.banner,
-                imageUrl: 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png'
+                imageUrl: backgroundImage
               }
             };
             localStorage.setItem('familyAppSettings', JSON.stringify(fallbackSettings));

@@ -22,7 +22,10 @@ import {
   ShoppingCart,
   UserCheck,
   Loader2,
-  ExternalLink
+  ExternalLink,
+  MessageCircle,
+  Megaphone,
+  Trash2
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -30,7 +33,7 @@ import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 import { useModules } from '../hooks/useModules';
 import { usePermissions } from '../hooks/usePermissions';
-import { toast } from 'sonner@2.0.3';
+import { toast } from 'sonner';
 
 interface ModuleApp {
   id: string;
@@ -61,32 +64,36 @@ interface AppStoreProps {
 }
 
 export function AppStore({ isOpen, onClose, isMobile = true }: AppStoreProps) {
-  const [activeTab, setActiveTab] = useState<'featured' | 'categories' | 'search'>('featured');
+  const [mainTab, setMainTab] = useState<'featured' | 'categories' | 'search'>('featured');
+  const [moduleTab, setModuleTab] = useState<'available' | 'installed'>('available');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedApp, setSelectedApp] = useState<ModuleApp | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [installing, setInstalling] = useState<string | null>(null);
+  const [uninstalling, setUninstalling] = useState<string | null>(null);
   
-  const { availableModules, installModule, isLoading } = useModules();
+  const { modules, availableModules, installModule, uninstallModule, isLoading } = useModules();
   const { hasPermission } = usePermissions();
 
   // Função para obter ícone do Lucide
   const getIconComponent = (iconName?: string) => {
     const icons = {
       DollarSign, Package, ShoppingCart, UserCheck, Zap, 
-      Gamepad2, BookOpen, Heart, Camera, Music, ExternalLink
+      Gamepad2, BookOpen, Heart, Camera, Music, ExternalLink,
+      MessageCircle, Megaphone
     };
     if (!iconName) return ShoppingBag;
     return icons[iconName as keyof typeof icons] || ShoppingBag;
   };
 
   const categories: Category[] = [
-    { id: 'productivity', name: 'Produtividade', icon: <Zap className="w-6 h-6" />, color: 'bg-blue-500' },
-    { id: 'finance', name: 'Financeiro', icon: <DollarSign className="w-6 h-6" />, color: 'bg-green-500' },
-    { id: 'ecommerce', name: 'E-commerce', icon: <ShoppingCart className="w-6 h-6" />, color: 'bg-purple-500' },
-    { id: 'hr', name: 'Recursos Humanos', icon: <UserCheck className="w-6 h-6" />, color: 'bg-orange-500' },
-    { id: 'entertainment', name: 'Entretenimento', icon: <Gamepad2 className="w-6 h-6" />, color: 'bg-pink-500' },
-    { id: 'education', name: 'Educação', icon: <BookOpen className="w-6 h-6" />, color: 'bg-indigo-500' }
+    { id: 'produtividade', name: 'Produtividade', icon: <Zap className="w-6 h-6" />, color: 'bg-blue-500' },
+    { id: 'financeiro', name: 'Financeiro', icon: <DollarSign className="w-6 h-6" />, color: 'bg-green-500' },
+    { id: 'vendas', name: 'Vendas', icon: <ShoppingCart className="w-6 h-6" />, color: 'bg-purple-500' },
+    { id: 'recursos_humanos', name: 'Recursos Humanos', icon: <UserCheck className="w-6 h-6" />, color: 'bg-orange-500' },
+    { id: 'comunicacao', name: 'Comunicação', icon: <MessageCircle className="w-6 h-6" />, color: 'bg-teal-500' },
+    { id: 'marketing', name: 'Marketing', icon: <Megaphone className="w-6 h-6" />, color: 'bg-pink-500' },
+    { id: 'outros', name: 'Outros', icon: <Package className="w-6 h-6" />, color: 'bg-gray-500' }
   ];
 
   // Usar módulos reais do hook
@@ -112,6 +119,34 @@ export function AppStore({ isOpen, onClose, isMobile = true }: AppStoreProps) {
       toast.error('Erro ao instalar módulo. Tente novamente.');
     } finally {
       setInstalling(null);
+    }
+  };
+
+  // Função para desinstalar módulo
+  const handleUninstall = async (moduleId: string) => {
+    console.log('🗑️ BOTÃO DESINSTALAR CLICADO:', moduleId);
+    console.log('🔐 Verificando permissão modules.uninstall:', hasPermission('modules.uninstall'));
+    
+    // TEMPORÁRIO: Permitir desinstalar sempre (similar ao que foi feito na instalação)
+    // TODO: Restaurar verificação de permissões quando Edge Functions funcionarem
+    if (!hasPermission('modules.uninstall') && !hasPermission('modules.install')) {
+      console.log('❌ Sem permissão para desinstalar');
+      toast.error('Você não tem permissão para desinstalar módulos');
+      return;
+    }
+
+    console.log('✅ Iniciando desinstalação do módulo:', moduleId);
+    setUninstalling(moduleId);
+    try {
+      await uninstallModule(moduleId);
+      toast.success('Módulo desinstalado com sucesso!');
+      // Fechar detalhes após desinstalação
+      setSelectedApp(null);
+    } catch (error) {
+      console.error('Erro ao desinstalar módulo:', error);
+      toast.error('Erro ao desinstalar módulo. Tente novamente.');
+    } finally {
+      setUninstalling(null);
     }
   };
 
@@ -316,11 +351,97 @@ export function AppStore({ isOpen, onClose, isMobile = true }: AppStoreProps) {
     </div>
   );
 
+  const renderInstalledModules = () => (
+    <div className="space-y-6">
+      <div className="text-center pb-4">
+        <h2 className="text-2xl font-medium text-gray-900 mb-2">Módulos Instalados</h2>
+        <p className="text-gray-600">Gerencie seus módulos instalados</p>
+      </div>
+
+      {modules.length === 0 ? (
+        <div className="text-center py-12">
+          <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum módulo instalado</h3>
+          <p className="text-gray-600 mb-6">Instale módulos para começar a usar</p>
+          <Button onClick={() => setModuleTab('available')}>
+            Explorar Módulos
+          </Button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {modules.map((module) => {
+            const IconComponent = getIconComponent(module.icone_lucide);
+            const isUninstalling = uninstalling === module.id;
+            
+            return (
+              <div
+                key={module.id}
+                className="flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100"
+              >
+                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+                  <IconComponent className="w-6 h-6 text-gray-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-gray-900 truncate">{module.nome}</h4>
+                  <p className="text-sm text-gray-600 truncate">{module.developer || 'Hub.App Team'}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <span className="text-xs text-gray-600">{module.rating || '5.0'}</span>
+                    </div>
+                    <span className="text-xs text-gray-400">•</span>
+                    <Badge variant="outline" className="text-xs">
+                      Instalado
+                    </Badge>
+                  </div>
+                </div>
+                <div className="text-right flex flex-col gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedApp(module);
+                    }}
+                    className="w-full"
+                  >
+                    Detalhes
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUninstall(module.id);
+                    }}
+                    disabled={isUninstalling}
+                    className="w-full relative z-10 pointer-events-auto"
+                  >
+                    {isUninstalling ? (
+                      <>
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                        Removendo...
+                      </>
+                    ) : (
+                      'Desinstalar'
+                    )}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+
   const renderAppDetails = () => {
     if (!selectedApp) return null;
 
     const IconComponent = getIconComponent(selectedApp.icone_lucide);
     const isInstalling = installing === selectedApp.id;
+    const isUninstalling = uninstalling === selectedApp.id;
+    const isInstalled = modules.some(m => m.id === selectedApp.id);
 
     return (
       <div className="space-y-6">
@@ -360,23 +481,44 @@ export function AppStore({ isOpen, onClose, isMobile = true }: AppStoreProps) {
 
         {/* Action Buttons */}
         <div className="flex gap-3">
-          <Button 
-            onClick={() => handleInstall(selectedApp.id)}
-            disabled={isInstalling || !hasPermission('modules.install')}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-          >
-            {isInstalling ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Instalando...
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4 mr-2" />
-                {selectedApp.is_free ? 'Instalar Grátis' : `Comprar R$ ${selectedApp.preco?.toFixed(2)}`}
-              </>
-            )}
-          </Button>
+          {!isInstalled ? (
+            <Button 
+              onClick={() => handleInstall(selectedApp.id)}
+              disabled={isInstalling || !hasPermission('modules.install')}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isInstalling ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Instalando...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 mr-2" />
+                  {selectedApp.is_free ? 'Instalar Grátis' : `Comprar R$ ${selectedApp.preco?.toFixed(2)}`}
+                </>
+              )}
+            </Button>
+          ) : (
+            <Button 
+              onClick={() => handleUninstall(selectedApp.id)}
+              disabled={isUninstalling}
+              variant="destructive"
+              className="flex-1"
+            >
+              {isUninstalling ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Removendo...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Desinstalar Módulo
+                </>
+              )}
+            </Button>
+          )}
           <Button variant="outline" size="sm">
             <Share className="w-4 h-4" />
           </Button>
@@ -509,9 +651,9 @@ export function AppStore({ isOpen, onClose, isMobile = true }: AppStoreProps) {
                 ].map((tab) => (
                   <button
                     key={tab.key}
-                    onClick={() => setActiveTab(tab.key as any)}
+                    onClick={() => setMainTab(tab.key as any)}
                     className={`flex-1 py-4 text-sm font-medium transition-colors ${
-                      activeTab === tab.key
+                      mainTab === tab.key
                         ? 'text-blue-600 border-b-2 border-blue-600'
                         : 'text-gray-600 hover:text-gray-900'
                     }`}
@@ -523,7 +665,7 @@ export function AppStore({ isOpen, onClose, isMobile = true }: AppStoreProps) {
             )}
 
             {/* Search Bar */}
-            {activeTab === 'search' && !selectedApp && (
+            {mainTab === 'search' && !selectedApp && (
               <div className="p-6 border-b border-gray-100 flex-shrink-0">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -537,15 +679,49 @@ export function AppStore({ isOpen, onClose, isMobile = true }: AppStoreProps) {
               </div>
             )}
 
+            {/* Module Tab Switch */}
+            {!selectedApp && (
+              <div className="border-b border-gray-100 flex-shrink-0">
+                <div className="px-6 py-2">
+                  <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+                    <button
+                      onClick={() => setModuleTab('available')}
+                      className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${
+                        moduleTab === 'available'
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Disponíveis ({availableModules.length})
+                    </button>
+                    <button
+                      onClick={() => setModuleTab('installed')}
+                      className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors ${
+                        moduleTab === 'installed'
+                          ? 'bg-white text-gray-900 shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      Instalados ({modules.length})
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Content */}
             <div className="flex-1 overflow-hidden">
               <ScrollArea className="h-full">
                 <div className="p-6">
                   {selectedApp ? renderAppDetails() : (
                     <>
-                      {activeTab === 'featured' && renderFeatured()}
-                      {activeTab === 'categories' && renderCategories()}
-                      {activeTab === 'search' && (
+                      {mainTab === 'featured' && (
+                        moduleTab === 'available' ? renderFeatured() : renderInstalledModules()
+                      )}
+                      {mainTab === 'categories' && (
+                        moduleTab === 'available' ? renderCategories() : renderInstalledModules()
+                      )}
+                      {mainTab === 'search' && (
                         <div className="space-y-6">
                           {searchQuery.length === 0 ? (
                             <div className="text-center py-12">
@@ -559,7 +735,8 @@ export function AppStore({ isOpen, onClose, isMobile = true }: AppStoreProps) {
                               </h3>
                               
                               {(() => {
-                                const filteredModules = availableModules.filter(module =>
+                                const targetModules = moduleTab === 'available' ? availableModules : modules;
+                                const filteredModules = targetModules.filter(module =>
                                   module.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                   module.descricao.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                   module.categoria.toLowerCase().includes(searchQuery.toLowerCase())
@@ -605,20 +782,38 @@ export function AppStore({ isOpen, onClose, isMobile = true }: AppStoreProps) {
                                               </Badge>
                                             </div>
                                           </div>
-                                          <Button
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              handleInstall(module.id);
-                                            }}
-                                            disabled={installing === module.id}
-                                            size="sm"
-                                          >
-                                            {installing === module.id ? (
-                                              <Loader2 className="w-4 h-4 animate-spin" />
-                                            ) : (
-                                              module.is_free ? 'Instalar' : 'Comprar'
-                                            )}
-                                          </Button>
+                                          {moduleTab === 'available' ? (
+                                            <Button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleInstall(module.id);
+                                              }}
+                                              disabled={installing === module.id}
+                                              size="sm"
+                                            >
+                                              {installing === module.id ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                              ) : (
+                                                module.is_free ? 'Instalar' : 'Comprar'
+                                              )}
+                                            </Button>
+                                          ) : (
+                                            <Button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleUninstall(module.id);
+                                              }}
+                                              disabled={uninstalling === module.id}
+                                              size="sm"
+                                              variant="destructive"
+                                            >
+                                              {uninstalling === module.id ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                              ) : (
+                                                'Desinstalar'
+                                              )}
+                                            </Button>
+                                          )}
                                         </motion.div>
                                       );
                                     })}

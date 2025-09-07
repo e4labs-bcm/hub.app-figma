@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import backgroundImage from 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png';
+import backgroundImage from '../assets/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png';
 import { EventBanner } from './EventBanner';
 import { AppStore } from './AppStore';
 import { useSettings } from '../hooks/useSettings';

@@ -5,7 +5,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { useAuth } from '../hooks/useAuth';
-import backgroundImage from 'figma:asset/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png';
+import backgroundImage from '../assets/99ca56e4a7a1b2eb866bf3a55721ef0f2f4d2b5c.png';
 
 export function LoginPage() {
   const { loginWithGoogle, loginWithPassword, signUpWithPassword, isLoading, error, clearError } = useAuth();
