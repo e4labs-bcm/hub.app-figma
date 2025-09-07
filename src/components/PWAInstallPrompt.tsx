@@ -94,6 +94,16 @@ export function PWAInstallPrompt() {
     sessionStorage.setItem('pwa-install-dismissed', 'true');
   };
 
+  // Para debug - sempre mostrar em development se não foi dispensado
+  if (import.meta.env.DEV) {
+    console.log('PWA Debug:', { 
+      showInstallPrompt, 
+      deferredPrompt: !!deferredPrompt, 
+      isIOS, 
+      dismissed: sessionStorage.getItem('pwa-install-dismissed') 
+    });
+  }
+
   // Não mostrar se foi dispensado nesta sessão
   if (sessionStorage.getItem('pwa-install-dismissed')) {
     return null;

@@ -16,6 +16,7 @@ import { NotificationCenter } from "./components/NotificationCenter";
 import { ModuleViewer } from "./components/ModuleViewer";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { PWADebug } from "./components/PWADebug";
+import { PWATestButton } from "./components/PWATestButton";
 import { updateMultiFinsModule, checkMultiFinsModule, fixMultiFinsURL } from "./utils/updateMultiFins";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import {
@@ -304,6 +305,9 @@ function AppContent() {
       
       {/* PWA Debug (only in development) */}
       <PWADebug />
+      
+      {/* PWA Test Tools (only in development) */}
+      <PWATestButton />
     </>
   );
 }
