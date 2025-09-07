@@ -15,6 +15,7 @@ import { SettingsPage } from "./components/SettingsPage";
 import { NotificationCenter } from "./components/NotificationCenter";
 import { ModuleViewer } from "./components/ModuleViewer";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
+import { PWADebug } from "./components/PWADebug";
 import { updateMultiFinsModule, checkMultiFinsModule, fixMultiFinsURL } from "./utils/updateMultiFins";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import {
@@ -300,6 +301,9 @@ function AppContent() {
 
       {/* PWA Install Prompt */}
       <PWAInstallPrompt />
+      
+      {/* PWA Debug (only in development) */}
+      <PWADebug />
     </>
   );
 }

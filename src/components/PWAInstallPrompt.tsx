@@ -39,12 +39,26 @@ export function PWAInstallPrompt() {
     // iOS - mostrar prompt manual após um tempo
     if (iOS && !isInstalled) {
       const timer = setTimeout(() => {
+        console.log('PWA: Showing iOS install prompt');
         setShowInstallPrompt(true);
-      }, 10000); // Mostrar após 10 segundos
+      }, 5000); // Mostrar após 5 segundos no iOS
 
       return () => {
         window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
         clearTimeout(timer);
+      };
+    }
+
+    // Para debug - forçar aparecer em development após 8 segundos
+    if (import.meta.env.DEV && !isInstalled) {
+      const debugTimer = setTimeout(() => {
+        console.log('PWA: Showing debug install prompt (development)');
+        setShowInstallPrompt(true);
+      }, 8000);
+
+      return () => {
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        clearTimeout(debugTimer);
       };
     }
 
