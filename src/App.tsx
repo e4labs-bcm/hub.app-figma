@@ -14,6 +14,7 @@ import { AppStore } from "./components/AppStore";
 import { SettingsPage } from "./components/SettingsPage";
 import { NotificationCenter } from "./components/NotificationCenter";
 import { ModuleViewer } from "./components/ModuleViewer";
+import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { updateMultiFinsModule, checkMultiFinsModule, fixMultiFinsURL } from "./utils/updateMultiFins";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import {
@@ -296,6 +297,9 @@ function AppContent() {
         moduleName={currentModule.name}
         showSidebar={showSidebar}
       />
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
     </>
   );
 }

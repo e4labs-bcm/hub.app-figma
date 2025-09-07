@@ -1,0 +1,48 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="256" fill="#1e40af"/>
+  
+  <!-- Hub Design -->
+  <g transform="translate(256, 256)">
+    <!-- Central Circle -->
+    <circle cx="0" cy="0" r="40" fill="white" opacity="0.9"/>
+    
+    <!-- Hub Spokes -->
+    <g stroke="white" stroke-width="12" opacity="0.8">
+      <!-- Top -->
+      <line x1="0" y1="-40" x2="0" y2="-120"/>
+      <circle cx="0" cy="-140" r="20" fill="white"/>
+      
+      <!-- Top Right -->
+      <line x1="28" y1="-28" x2="85" y2="-85"/>
+      <circle cx="99" cy="-99" r="20" fill="white"/>
+      
+      <!-- Right -->
+      <line x1="40" y1="0" x2="120" y2="0"/>
+      <circle cx="140" cy="0" r="20" fill="white"/>
+      
+      <!-- Bottom Right -->
+      <line x1="28" y1="28" x2="85" y2="85"/>
+      <circle cx="99" cy="99" r="20" fill="white"/>
+      
+      <!-- Bottom -->
+      <line x1="0" y1="40" x2="0" y2="120"/>
+      <circle cx="0" cy="140" r="20" fill="white"/>
+      
+      <!-- Bottom Left -->
+      <line x1="-28" y1="28" x2="-85" y2="85"/>
+      <circle cx="-99" cy="99" r="20" fill="white"/>
+      
+      <!-- Left -->
+      <line x1="-40" y1="0" x2="-120" y2="0"/>
+      <circle cx="-140" cy="0" r="20" fill="white"/>
+      
+      <!-- Top Left -->
+      <line x1="-28" y1="-28" x2="-85" y2="-85"/>
+      <circle cx="-99" cy="-99" r="20" fill="white"/>
+    </g>
+    
+    <!-- Text -->
+    <text x="0" y="60" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Hub.App</text>
+  </g>
+</svg>
