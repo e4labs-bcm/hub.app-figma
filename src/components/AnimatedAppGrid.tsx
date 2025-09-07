@@ -50,8 +50,45 @@ interface AnimatedAppGridProps {
 
 export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsOpen, onModuleOpen }: AnimatedAppGridProps) {
   const [isDesktop, setIsDesktop] = useState(false);
+  const [iconSize, setIconSize] = useState({ width: 56, height: 56 }); // 14 * 4 = 56px padrão
   const { modules, isLoading: modulesLoading } = useModules();
   const { hasPermission } = usePermissions();
+
+  // Calcular tamanho dos ícones baseado na largura da tela
+  useEffect(() => {
+    const calculateIconSize = () => {
+      if (window.innerWidth >= 768) return; // Só aplicar no mobile
+      
+      const screenWidth = window.innerWidth;
+      const mmToPx = 3.7795275591; // 1mm = ~3.78px em densidade padrão
+      const marginMm = 7; // 7mm de cada lado
+      const totalMarginPx = marginMm * mmToPx * 2; // 7mm * 2 lados
+      const availableWidth = screenWidth - totalMarginPx;
+      const cols = 4;
+      const gap = 12; // 3 gaps entre 4 colunas * 12px = 36px
+      const totalGapSpace = gap * (cols - 1);
+      const iconSpace = (availableWidth - totalGapSpace) / cols;
+      
+      // Limitar entre um mínimo e máximo razoável
+      const minSize = 48;
+      const maxSize = 80;
+      const calculatedSize = Math.max(minSize, Math.min(maxSize, Math.floor(iconSpace)));
+      
+      console.log('🎯 DEBUG: Calculando tamanho dos ícones:', {
+        screenWidth,
+        availableWidth,
+        iconSpace,
+        calculatedSize
+      });
+      
+      setIconSize({ width: calculatedSize, height: calculatedSize });
+    };
+    
+    calculateIconSize();
+    window.addEventListener('resize', calculateIconSize);
+    
+    return () => window.removeEventListener('resize', calculateIconSize);
+  }, []);
 
   // Função para obter ícone do Lucide
   const getIconComponent = (iconName: string) => {
@@ -280,21 +317,29 @@ export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsO
             >
               <motion.div 
                 className={`
-                  w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg
+                  rounded-2xl flex items-center justify-center shadow-lg
                   ${app.bgColor}
                 `}
+                style={{
+                  width: `${iconSize.width}px`,
+                  height: `${iconSize.height}px`
+                }}
                 whileHover={{ rotate: 5 }}
                 transition={{ duration: 0.2 }}
               >
-                {app.icon}
+                <div style={{ 
+                  fontSize: `${iconSize.width * 0.4}px` // Ícone será 40% do tamanho do container
+                }}>
+                  {app.icon}
+                </div>
               </motion.div>
             </motion.button>
             <motion.span 
-              className="text-white text-xs text-center leading-tight px-1 max-w-full"
+              className="text-white text-center leading-tight px-1 max-w-full"
               style={{ 
                 wordBreak: "break-word",
                 hyphens: "auto",
-                fontSize: "11px",
+                fontSize: `${Math.max(10, iconSize.width * 0.18)}px`, // Texto proporcional ao ícone, mínimo 10px
                 lineHeight: "1.2"
               }}
               initial={{ opacity: 0 }}

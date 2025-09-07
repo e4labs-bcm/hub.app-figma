@@ -190,12 +190,16 @@ function AppContent() {
             {/* App Grid */}
             <motion.div
               key="mobile-grid"
-              className="flex-1 flex items-start justify-center px-6 pt-6"
+              className="flex-1 flex items-start justify-center pt-6"
+              style={{
+                paddingLeft: '7mm', // 7mm de margem esquerda
+                paddingRight: '7mm' // 7mm de margem direita
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <div className="w-full max-w-xs py-[-42px] mx-[0px] py-[4px] mt-[6px] mr-[0px] mb-[1px] ml-[0px] px-[0px] py-[34px]">
+              <div className="w-full py-[-42px] mx-[0px] py-[4px] mt-[6px] mr-[0px] mb-[1px] ml-[0px] px-[0px] py-[34px]">
                 <AnimatedAppGrid
                   onAppStoreOpen={openAppStore}
                   onSettingsOpen={openSettings}
