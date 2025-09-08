@@ -20,6 +20,7 @@ import { PWATestButton } from "./components/PWATestButton";
 import { PWAInstallBanner } from "./components/PWAInstallBanner";
 import { PWAInstallFAB } from "./components/PWAInstallFAB";
 import { PWAWelcomeModal } from "./components/PWAWelcomeModal";
+import { PWAInstallInstructionsModal } from "./components/PWAInstallInstructionsModal";
 import { updateMultiFinsModule, checkMultiFinsModule, fixMultiFinsURL } from "./utils/updateMultiFins";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { AuthCallback } from "./components/AuthCallback";
@@ -316,6 +317,7 @@ function AppContent() {
       <PWAInstallBanner />
       <PWAInstallFAB />
       <PWAWelcomeModal />
+      <PWAInstallInstructionsModal />
       
       {/* Legacy PWA Components */}
       <PWAInstallPrompt />

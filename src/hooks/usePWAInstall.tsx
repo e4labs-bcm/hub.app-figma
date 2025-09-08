@@ -15,6 +15,7 @@ interface PWAInstallState {
   isFirstVisit: boolean;
   canUseNativePrompt: boolean;
   deferredPrompt: BeforeInstallPromptEvent | null;
+  showInstructionsModal: boolean;
 }
 
 export function usePWAInstall() {
@@ -27,7 +28,8 @@ export function usePWAInstall() {
     showInstallPrompt: false,
     isFirstVisit: false,
     canUseNativePrompt: false,
-    deferredPrompt: null
+    deferredPrompt: null,
+    showInstructionsModal: false
   });
 
   useEffect(() => {
@@ -66,8 +68,19 @@ export function usePWAInstall() {
       showInstallPrompt: !isInstalled && !wasDismissedRecently
     }));
 
+    // Debug: log state inicial
+    console.log('🚀 DEBUG: PWA Hook initialized', {
+      isIOS,
+      isAndroid, 
+      isDesktop,
+      isInstalled,
+      isFirstVisit,
+      showInstallPrompt: !isInstalled && !wasDismissedRecently
+    });
+
     // Listener para beforeinstallprompt (Android/Desktop)
     const handleBeforeInstallPrompt = (e: Event) => {
+      console.log('🚀 DEBUG: beforeinstallprompt event received');
       const event = e as BeforeInstallPromptEvent;
       e.preventDefault();
       
@@ -81,6 +94,7 @@ export function usePWAInstall() {
 
     // Listener para quando o app é instalado
     const handleAppInstalled = () => {
+      console.log('🚀 DEBUG: appinstalled event received');
       setInstallState(prev => ({
         ...prev,
         isInstalled: true,
@@ -89,8 +103,22 @@ export function usePWAInstall() {
       }));
     };
 
+    // Debug: verificar se eventos são suportados
+    console.log('🚀 DEBUG: Adding event listeners');
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     window.addEventListener('appinstalled', handleAppInstalled);
+
+    // Fallback: Para desenvolvimento, simular que é instalável após 2 segundos
+    if (import.meta.env.DEV && isDesktop) {
+      console.log('🚀 DEBUG: Development mode, simulating installable state');
+      setTimeout(() => {
+        setInstallState(prev => ({
+          ...prev,
+          isInstallable: true,
+          // Não definir canUseNativePrompt como true para forçar fallback
+        }));
+      }, 2000);
+    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -99,10 +127,20 @@ export function usePWAInstall() {
   }, []);
 
   const promptInstall = async () => {
+    console.log('🚀 DEBUG: promptInstall called', {
+      canUseNativePrompt: installState.canUseNativePrompt,
+      hasDeferredPrompt: !!installState.deferredPrompt,
+      isDesktop: installState.isDesktop,
+      isInstallable: installState.isInstallable
+    });
+
     if (installState.deferredPrompt && installState.canUseNativePrompt) {
       try {
+        console.log('🚀 DEBUG: Using native prompt');
         await installState.deferredPrompt.prompt();
         const choiceResult = await installState.deferredPrompt.userChoice;
+        
+        console.log('🚀 DEBUG: User choice:', choiceResult.outcome);
         
         if (choiceResult.outcome === 'accepted') {
           console.log('PWA installation accepted');
@@ -116,6 +154,15 @@ export function usePWAInstall() {
       } catch (error) {
         console.error('Error prompting PWA install:', error);
       }
+    } else {
+      // Fallback para quando não há prompt nativo
+      console.log('🚀 DEBUG: No native prompt, showing manual instructions');
+      
+      // Mostrar modal de instruções para qualquer dispositivo sem prompt nativo
+      setInstallState(prev => ({ 
+        ...prev, 
+        showInstructionsModal: true 
+      }));
     }
   };
 
@@ -136,7 +183,14 @@ export function usePWAInstall() {
   const showInstallInstructions = () => {
     setInstallState(prev => ({
       ...prev,
-      showInstallPrompt: true
+      showInstructionsModal: true
+    }));
+  };
+
+  const closeInstructionsModal = () => {
+    setInstallState(prev => ({
+      ...prev,
+      showInstructionsModal: false
     }));
   };
 
@@ -182,6 +236,7 @@ export function usePWAInstall() {
     promptInstall,
     dismissInstallPrompt,
     showInstallInstructions,
+    closeInstructionsModal,
     getInstallInstructions
   };
 }
