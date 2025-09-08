@@ -15,7 +15,7 @@ import { SettingsPage } from "./components/SettingsPage";
 import { NotificationCenter } from "./components/NotificationCenter";
 import { ModuleViewer } from "./components/ModuleViewer";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
-import { PWADebug } from "./components/PWADebug";
+import { PWADebugPanel } from "./components/PWADebugPanel";
 import { PWATestButton } from "./components/PWATestButton";
 import { PWAInstallBanner } from "./components/PWAInstallBanner";
 import { PWAInstallFAB } from "./components/PWAInstallFAB";
@@ -323,7 +323,7 @@ function AppContent() {
       <PWAInstallPrompt />
       
       {/* PWA Debug Tools (development only) */}
-      <PWADebug />
+      <PWADebugPanel />
       <PWATestButton />
     </>
   );

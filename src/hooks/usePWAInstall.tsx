@@ -58,6 +58,14 @@ export function usePWAInstall() {
     const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
     const wasDismissedRecently = dismissedTime > oneDayAgo;
 
+    console.log('🚀 DEBUG: Dismissal check', {
+      dismissedRecently,
+      dismissedTime,
+      oneDayAgo,
+      wasDismissedRecently,
+      now: Date.now()
+    });
+
     setInstallState(prev => ({
       ...prev,
       isIOS,

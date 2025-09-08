@@ -19,11 +19,19 @@ export function PWAInstallBanner() {
   }
 
   const handleInstall = async () => {
+    console.log('🎯 DEBUG: PWAInstallBanner - handleInstall clicked', {
+      canUseNativePrompt,
+      isIOS,
+      isAndroid,
+      isDesktop
+    });
+
     if (canUseNativePrompt) {
+      console.log('🎯 DEBUG: PWAInstallBanner - calling promptInstall');
       await promptInstall();
     } else {
-      // Para iOS ou casos onde não há prompt nativo, mostrar instruções
-      // Isso será implementado no modal
+      console.log('🎯 DEBUG: PWAInstallBanner - no native prompt, calling promptInstall anyway');
+      await promptInstall(); // Sempre chamar - o hook decide o que fazer
     }
   };
 
