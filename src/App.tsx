@@ -17,6 +17,9 @@ import { ModuleViewer } from "./components/ModuleViewer";
 import { PWAInstallPrompt } from "./components/PWAInstallPrompt";
 import { PWADebug } from "./components/PWADebug";
 import { PWATestButton } from "./components/PWATestButton";
+import { PWAInstallBanner } from "./components/PWAInstallBanner";
+import { PWAInstallFAB } from "./components/PWAInstallFAB";
+import { PWAWelcomeModal } from "./components/PWAWelcomeModal";
 import { updateMultiFinsModule, checkMultiFinsModule, fixMultiFinsURL } from "./utils/updateMultiFins";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { AuthCallback } from "./components/AuthCallback";
@@ -309,13 +312,16 @@ function AppContent() {
         showSidebar={showSidebar}
       />
 
-      {/* PWA Install Prompt */}
+      {/* Smart PWA Install System */}
+      <PWAInstallBanner />
+      <PWAInstallFAB />
+      <PWAWelcomeModal />
+      
+      {/* Legacy PWA Components */}
       <PWAInstallPrompt />
       
-      {/* PWA Debug (only in development) */}
+      {/* PWA Debug Tools (development only) */}
       <PWADebug />
-      
-      {/* PWA Test Tools (only in development) */}
       <PWATestButton />
     </>
   );
