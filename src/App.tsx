@@ -19,6 +19,7 @@ import { PWADebug } from "./components/PWADebug";
 import { PWATestButton } from "./components/PWATestButton";
 import { updateMultiFinsModule, checkMultiFinsModule, fixMultiFinsURL } from "./utils/updateMultiFins";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { AuthCallback } from "./components/AuthCallback";
 import {
   SettingsProvider,
   useSettings,
@@ -34,6 +35,9 @@ function AppContent() {
   const [isNotificationCenterOpen, setIsNotificationCenterOpen] = useState(false);
   const [isModuleViewerOpen, setIsModuleViewerOpen] = useState(false);
   const [currentModule, setCurrentModule] = useState({ url: '', name: '' });
+
+  // Check if we're on the auth callback page
+  const isAuthCallback = window.location.pathname === '/auth/callback';
 
   // Safe hook usage with error boundaries
   const auth = useAuth();
@@ -90,6 +94,11 @@ function AppContent() {
     setIsModuleViewerOpen(false);
     setCurrentModule({ url: '', name: '' });
   };
+
+  // Auth callback page
+  if (isAuthCallback) {
+    return <AuthCallback />;
+  }
 
   // Show loading screen while checking authentication
   if (isLoading) {

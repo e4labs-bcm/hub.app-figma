@@ -4,7 +4,10 @@
       "Bash(npm run dev:*)",
       "Bash(node:*)",
       "Bash(npx supabase functions serve:*)",
-      "Bash(supabase:*)"
+      "Bash(supabase:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
