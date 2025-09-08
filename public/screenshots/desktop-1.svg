@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1280" height="720" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#000000"/>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="250" height="720" fill="#1f2937"/>
+  <text x="125" y="50" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="white">Hub.App</text>
+  
+  <!-- Main content area -->
+  <rect x="250" y="0" width="1030" height="720" fill="#111827"/>
+  
+  <!-- Grid of modules -->
+  <rect x="300" y="100" width="120" height="120" rx="16" fill="#3b82f6"/>
+  <text x="360" y="170" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="white">Módulo A</text>
+  
+  <rect x="450" y="100" width="120" height="120" rx="16" fill="#10b981"/>
+  <text x="510" y="170" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="white">Módulo B</text>
+  
+  <rect x="600" y="100" width="120" height="120" rx="16" fill="#f59e0b"/>
+  <text x="660" y="170" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="white">Módulo C</text>
+  
+  <!-- Description -->
+  <text x="765" y="300" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="white">Interface desktop</text>
+</svg>

@@ -1,9 +1,9 @@
-const CACHE_NAME = 'hub-app-v1.0.0';
+const CACHE_NAME = 'hub-app-v1.1.0';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json'
+  '/manifest.json',
+  '/icons/icon-192x192.svg',
+  '/icons/icon-512x512.svg'
 ];
 
 // Install event - cache resources

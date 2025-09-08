@@ -138,17 +138,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setAuthState(prev => ({ ...prev, isLoading: true }));
       setError(null);
 
-      // Detectar se estamos em produção ou desenvolvimento
-      const isProduction = window.location.hostname !== 'localhost';
-      const redirectURL = isProduction 
-        ? 'https://hub-app-figma.vercel.app/auth/callback'
-        : 'http://localhost:3000/auth/callback';
-
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: redirectURL
-        }
+        provider: 'google'
       });
 
       if (error) {
