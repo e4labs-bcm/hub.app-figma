@@ -50,6 +50,10 @@ export function PWAProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const buildTime = new Date().toISOString();
     console.log('🔥 PWAProvider: Initializing PWA context', { buildTime, timestamp: Date.now() });
+    console.log('🔥 PWAProvider: Debug functions will be available as:');
+    console.log('🔥   - window.debugPWAState()');
+    console.log('🔥   - window.forceShowPWAModal()');
+    console.log('🔥   - window.forcePWADebug()');
     
     // Detectar dispositivo
     const userAgent = navigator.userAgent;
@@ -259,18 +263,31 @@ export function PWAProvider({ children }: { children: ReactNode }) {
     isDesktop: installState.isDesktop
   });
 
-  // Debug: Adicionar botão de teste global
-  if (import.meta.env.DEV) {
-    (window as any).forceShowPWAModal = () => {
-      console.log('🔥 EMERGENCY: Forcing PWA modal via window.forceShowPWAModal()');
-      setInstallState(prev => ({ ...prev, showInstructionsModal: true }));
-    };
-    
-    (window as any).debugPWAState = () => {
-      console.log('🔥 PWA STATE DEBUG:', contextValue);
-      return contextValue;
-    };
-  }
+  // Debug: Adicionar botão de teste global (sempre disponível para debug)
+  (window as any).forceShowPWAModal = () => {
+    console.log('🔥 EMERGENCY: Forcing PWA modal via window.forceShowPWAModal()');
+    setInstallState(prev => ({ ...prev, showInstructionsModal: true }));
+  };
+  
+  (window as any).debugPWAState = () => {
+    console.log('🔥 PWA STATE DEBUG:', contextValue);
+    return contextValue;
+  };
+  
+  (window as any).forcePWADebug = () => {
+    console.log('🔥 FORCE DEBUG: Current install state:', installState);
+    console.log('🔥 FORCE DEBUG: Context value:', contextValue);
+    console.log('🔥 FORCE DEBUG: showInstructionsModal:', installState.showInstructionsModal);
+    alert(`PWA Debug Info:
+      
+showInstructionsModal: ${installState.showInstructionsModal}
+isDesktop: ${installState.isDesktop}
+canUseNativePrompt: ${installState.canUseNativePrompt}
+isInstallable: ${installState.isInstallable}
+deferredPrompt: ${!!installState.deferredPrompt}
+
+Use window.forceShowPWAModal() para forçar modal`);
+  };
 
   return (
     <PWAContext.Provider value={contextValue}>
