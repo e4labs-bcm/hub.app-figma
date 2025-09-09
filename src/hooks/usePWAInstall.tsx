@@ -177,23 +177,7 @@ export function usePWAInstall() {
     } else {
       // Fallback para quando não há prompt nativo
       console.log('🚀 DEBUG: No native prompt available, showing manual instructions');
-      console.log('🚀 DEBUG: Setting showInstructionsModal to true');
-      
-      // Sempre mostrar modal de instruções quando não há prompt nativo
-      setInstallState(prev => {
-        console.log('🚀 DEBUG: Previous state:', prev.showInstructionsModal);
-        const newState = { 
-          ...prev, 
-          showInstructionsModal: true 
-        };
-        console.log('🚀 DEBUG: New state:', newState.showInstructionsModal);
-        return newState;
-      });
-      
-      // Verificar se realmente mudou
-      setTimeout(() => {
-        console.log('🚀 DEBUG: After timeout, showInstructionsModal is:', installState.showInstructionsModal);
-      }, 100);
+      showInstallInstructions();
     }
   };
 
