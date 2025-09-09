@@ -7,7 +7,8 @@ export function PWAInstallInstructionsModalSimple() {
     showInstructionsModal,
     isDesktop,
     isAndroid,
-    isIOS
+    isIOS,
+    timestamp: Date.now()
   });
 
   if (!showInstructionsModal) {
@@ -16,6 +17,30 @@ export function PWAInstallInstructionsModalSimple() {
   }
 
   console.log('🔥 SIMPLE DEBUG: showInstructionsModal is true, rendering SIMPLE modal');
+  
+  // Adicionar elemento de debug visual garantido
+  setTimeout(() => {
+    const existingDebug = document.getElementById('simple-modal-debug');
+    if (!existingDebug) {
+      const debugDiv = document.createElement('div');
+      debugDiv.id = 'simple-modal-debug';
+      debugDiv.style.cssText = `
+        position: fixed;
+        top: 50px;
+        right: 10px;
+        background: lime;
+        color: black;
+        padding: 10px;
+        z-index: 99999;
+        border: 2px solid red;
+        font-weight: bold;
+      `;
+      debugDiv.textContent = 'SIMPLE MODAL IS RENDERING!';
+      document.body.appendChild(debugDiv);
+      
+      setTimeout(() => debugDiv.remove(), 5000);
+    }
+  }, 100);
 
   const getInstructions = () => {
     if (isIOS) {

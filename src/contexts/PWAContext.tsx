@@ -48,7 +48,8 @@ export function PWAProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    console.log('🔥 PWAProvider: Initializing PWA context');
+    const buildTime = new Date().toISOString();
+    console.log('🔥 PWAProvider: Initializing PWA context', { buildTime, timestamp: Date.now() });
     
     // Detectar dispositivo
     const userAgent = navigator.userAgent;
@@ -257,6 +258,19 @@ export function PWAProvider({ children }: { children: ReactNode }) {
     showInstructionsModal: installState.showInstructionsModal,
     isDesktop: installState.isDesktop
   });
+
+  // Debug: Adicionar botão de teste global
+  if (import.meta.env.DEV) {
+    (window as any).forceShowPWAModal = () => {
+      console.log('🔥 EMERGENCY: Forcing PWA modal via window.forceShowPWAModal()');
+      setInstallState(prev => ({ ...prev, showInstructionsModal: true }));
+    };
+    
+    (window as any).debugPWAState = () => {
+      console.log('🔥 PWA STATE DEBUG:', contextValue);
+      return contextValue;
+    };
+  }
 
   return (
     <PWAContext.Provider value={contextValue}>
