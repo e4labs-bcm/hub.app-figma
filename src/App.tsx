@@ -32,6 +32,7 @@ import { useAppStore } from "./hooks/useAppStore";
 import { ModulesProvider } from "./hooks/useModules";
 import { PermissionsProvider } from "./hooks/usePermissions";
 import { NotificationsProvider } from "./hooks/useNotifications";
+import { PWAProvider } from "./contexts/PWAContext";
 
 function AppContent() {
   const [showSidebar, setShowSidebar] = useState(true);
@@ -331,16 +332,18 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <PermissionsProvider>
-        <ModulesProvider>
-          <NotificationsProvider>
-            <SettingsProvider>
-              <AppContent />
-            </SettingsProvider>
-          </NotificationsProvider>
-        </ModulesProvider>
-      </PermissionsProvider>
-    </AuthProvider>
+    <PWAProvider>
+      <AuthProvider>
+        <PermissionsProvider>
+          <ModulesProvider>
+            <NotificationsProvider>
+              <SettingsProvider>
+                <AppContent />
+              </SettingsProvider>
+            </NotificationsProvider>
+          </ModulesProvider>
+        </PermissionsProvider>
+      </AuthProvider>
+    </PWAProvider>
   );
 }

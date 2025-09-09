@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Chrome, Monitor, Download, ExternalLink, Globe } from 'lucide-react';
-import { usePWAInstall } from '../hooks/usePWAInstall';
+import { usePWAContext } from '../contexts/PWAContext';
 
 interface PWAInstallInstructionsProps {
   isOpen: boolean;
@@ -8,7 +8,7 @@ interface PWAInstallInstructionsProps {
 }
 
 export function PWAInstallInstructions({ isOpen, onClose }: PWAInstallInstructionsProps) {
-  const { isDesktop, isAndroid, isIOS } = usePWAInstall();
+  const { isDesktop, isAndroid, isIOS } = usePWAContext();
 
   console.log('🎯 DEBUG: PWAInstallInstructions render', {
     isOpen,

@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Smartphone } from 'lucide-react';
 import { useState } from 'react';
-import { usePWAInstall } from '../hooks/usePWAInstall';
+import { usePWAContext } from '../contexts/PWAContext';
 
 export function PWAInstallFAB() {
   const [isHovered, setIsHovered] = useState(false);
@@ -12,7 +12,7 @@ export function PWAInstallFAB() {
     isIOS,
     promptInstall,
     showInstallInstructions
-  } = usePWAInstall();
+  } = usePWAContext();
 
   // Não mostrar se estiver instalado ou não deve mostrar prompt
   if (isInstalled || !showInstallPrompt) {

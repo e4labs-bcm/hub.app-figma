@@ -1,9 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download } from 'lucide-react';
-import { usePWAInstall } from '../hooks/usePWAInstall';
+import { usePWAContext } from '../contexts/PWAContext';
 
 export function PWAInstallInstructionsModal() {
-  const { showInstructionsModal, closeInstructionsModal, isDesktop, isAndroid, isIOS } = usePWAInstall();
+  const { showInstructionsModal, closeInstructionsModal, isDesktop, isAndroid, isIOS } = usePWAContext();
 
   if (!showInstructionsModal) {
     return null;

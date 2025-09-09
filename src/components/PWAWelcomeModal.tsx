@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download, Smartphone, Monitor, Share, Plus, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
-import { usePWAInstall } from '../hooks/usePWAInstall';
+import { usePWAContext } from '../contexts/PWAContext';
 
 export function PWAWelcomeModal() {
   const [showInstructions, setShowInstructions] = useState(false);
@@ -16,7 +16,7 @@ export function PWAWelcomeModal() {
     promptInstall,
     dismissInstallPrompt,
     getInstallInstructions
-  } = usePWAInstall();
+  } = usePWAContext();
 
   // Mostrar apenas na primeira visita, se não estiver instalado
   const shouldShow = isFirstVisit && !isInstalled && showInstallPrompt;

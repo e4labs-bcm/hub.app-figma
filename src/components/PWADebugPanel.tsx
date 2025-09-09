@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Bug, Trash2, RefreshCw } from 'lucide-react';
-import { usePWAInstall } from '../hooks/usePWAInstall';
+import { usePWAContext } from '../contexts/PWAContext';
 
 export function PWADebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
-  const pwaState = usePWAInstall();
+  const pwaState = usePWAContext();
   
   console.log('🔧 DEBUG: PWADebugPanel render', {
     isOpen,

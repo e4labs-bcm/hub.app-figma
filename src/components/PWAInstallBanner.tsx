@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Smartphone, Monitor, Zap } from 'lucide-react';
-import { usePWAInstall } from '../hooks/usePWAInstall';
+import { usePWAContext } from '../contexts/PWAContext';
 
 export function PWAInstallBanner() {
   const {
@@ -12,7 +12,7 @@ export function PWAInstallBanner() {
     isDesktop,
     promptInstall,
     dismissInstallPrompt
-  } = usePWAInstall();
+  } = usePWAContext();
 
   if (isInstalled || !showInstallPrompt) {
     return null;
