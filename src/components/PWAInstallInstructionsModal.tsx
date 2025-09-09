@@ -5,8 +5,32 @@ import { usePWAContext } from '../contexts/PWAContext';
 export function PWAInstallInstructionsModal() {
   const { showInstructionsModal, closeInstructionsModal, isDesktop, isAndroid, isIOS } = usePWAContext();
 
+  console.log('🎯 DEBUG: PWAInstallInstructionsModal render', {
+    showInstructionsModal,
+    isDesktop,
+    isAndroid,
+    isIOS
+  });
+
   if (!showInstructionsModal) {
+    console.log('🎯 DEBUG: PWAInstallInstructionsModal - showInstructionsModal is false, returning null');
     return null;
+  }
+
+  console.log('🎯 DEBUG: PWAInstallInstructionsModal - showInstructionsModal is true, rendering modal');
+
+  // Debug visual - remover após teste
+  if (import.meta.env.DEV) {
+    console.log('🎯 DEBUG: Adding debug element to body');
+    const debugEl = document.getElementById('pwa-debug-modal');
+    if (!debugEl) {
+      const div = document.createElement('div');
+      div.id = 'pwa-debug-modal';
+      div.style.cssText = 'position:fixed;top:10px;right:10px;background:red;color:white;padding:10px;z-index:10000;';
+      div.textContent = 'PWA Modal RENDERING';
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 3000);
+    }
   }
 
   const getInstructions = () => {
@@ -54,8 +78,9 @@ export function PWAInstallInstructionsModal() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
         onClick={closeInstructionsModal}
+        style={{ zIndex: 9999 }}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
