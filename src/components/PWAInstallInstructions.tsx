@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Chrome, Monitor, Firefox, Download, ExternalLink } from 'lucide-react';
+import { X, Chrome, Monitor, Download, ExternalLink, Globe } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 
 interface PWAInstallInstructionsProps {
@@ -10,7 +10,19 @@ interface PWAInstallInstructionsProps {
 export function PWAInstallInstructions({ isOpen, onClose }: PWAInstallInstructionsProps) {
   const { isDesktop, isAndroid, isIOS } = usePWAInstall();
 
-  if (!isOpen) return null;
+  console.log('🎯 DEBUG: PWAInstallInstructions render', {
+    isOpen,
+    isDesktop,
+    isAndroid,
+    isIOS
+  });
+
+  if (!isOpen) {
+    console.log('🎯 DEBUG: PWAInstallInstructions - not open, returning null');
+    return null;
+  }
+
+  console.log('🎯 DEBUG: PWAInstallInstructions - is open, rendering modal');
 
   const getBrowserInstructions = () => {
     if (isIOS) {
@@ -71,7 +83,7 @@ export function PWAInstallInstructions({ isOpen, onClose }: PWAInstallInstructio
     },
     {
       name: 'Firefox',
-      icon: Firefox,
+      icon: Globe,
       steps: [
         'Clique no menu (☰)',
         'Selecione "Instalar este site como app"'

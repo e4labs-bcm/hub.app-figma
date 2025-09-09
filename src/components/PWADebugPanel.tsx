@@ -6,6 +6,12 @@ import { usePWAInstall } from '../hooks/usePWAInstall';
 export function PWADebugPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const pwaState = usePWAInstall();
+  
+  console.log('🔧 DEBUG: PWADebugPanel render', {
+    isOpen,
+    isInstalled: pwaState.isInstalled,
+    showInstallPrompt: pwaState.showInstallPrompt
+  });
 
   // Só mostrar em desenvolvimento
   if (import.meta.env.PROD) {
@@ -111,6 +117,33 @@ export function PWADebugPanel() {
         >
           <Bug className="w-4 h-4" />
           Testar Instruções
+        </button>
+
+        <button
+          onClick={() => {
+            console.log('🔧 DEBUG: Force opening instructions modal');
+            console.log('🔧 DEBUG: Current state before:', pwaState.showInstructionsModal);
+            pwaState.showInstallInstructions();
+            // Forçar abertura diretamente
+            setTimeout(() => {
+              console.log('🔧 DEBUG: Current modal state after:', pwaState.showInstructionsModal);
+            }, 100);
+          }}
+          className="w-full flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm"
+        >
+          <Bug className="w-4 h-4" />
+          Forçar Modal Debug
+        </button>
+
+        <button
+          onClick={() => {
+            console.log('🔧 ALERT: Testing simple alert');
+            alert('Se você vê esta mensagem, o botão está funcionando!\n\nO problema é que o modal não está sendo exibido corretamente.');
+          }}
+          className="w-full flex items-center gap-2 px-3 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 text-sm"
+        >
+          <Bug className="w-4 h-4" />
+          Teste Alert Simples
         </button>
       </div>
     </motion.div>

@@ -20,13 +20,6 @@ export function PWAInstallFAB() {
   }
 
   const handleInstall = async () => {
-    console.log('🎯 DEBUG: PWAInstallFAB - handleInstall clicked', {
-      canUseNativePrompt,
-      isIOS,
-      showInstallPrompt
-    });
-
-    // Sempre chamar promptInstall - deixar o hook decidir o que fazer
     await promptInstall();
   };
 

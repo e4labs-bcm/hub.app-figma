@@ -19,20 +19,7 @@ export function PWAInstallBanner() {
   }
 
   const handleInstall = async () => {
-    console.log('🎯 DEBUG: PWAInstallBanner - handleInstall clicked', {
-      canUseNativePrompt,
-      isIOS,
-      isAndroid,
-      isDesktop
-    });
-
-    if (canUseNativePrompt) {
-      console.log('🎯 DEBUG: PWAInstallBanner - calling promptInstall');
-      await promptInstall();
-    } else {
-      console.log('🎯 DEBUG: PWAInstallBanner - no native prompt, calling promptInstall anyway');
-      await promptInstall(); // Sempre chamar - o hook decide o que fazer
-    }
+    await promptInstall();
   };
 
   const getDeviceIcon = () => {

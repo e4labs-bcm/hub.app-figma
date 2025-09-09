@@ -90,7 +90,11 @@ export function usePWAInstall() {
     const handleBeforeInstallPrompt = (e: Event) => {
       console.log('🚀 DEBUG: beforeinstallprompt event received');
       const event = e as BeforeInstallPromptEvent;
+      
+      // Sempre prevenir o default para controlarmos quando mostrar
       e.preventDefault();
+      
+      console.log('🚀 DEBUG: Event prevented, storing deferredPrompt');
       
       setInstallState(prev => ({
         ...prev,
@@ -139,7 +143,9 @@ export function usePWAInstall() {
       canUseNativePrompt: installState.canUseNativePrompt,
       hasDeferredPrompt: !!installState.deferredPrompt,
       isDesktop: installState.isDesktop,
-      isInstallable: installState.isInstallable
+      isInstallable: installState.isInstallable,
+      deferredPrompt: installState.deferredPrompt,
+      showInstructionsModal: installState.showInstructionsModal
     });
 
     if (installState.deferredPrompt && installState.canUseNativePrompt) {
@@ -161,16 +167,33 @@ export function usePWAInstall() {
         }));
       } catch (error) {
         console.error('Error prompting PWA install:', error);
+        // Se o prompt nativo falhou, mostrar instruções
+        console.log('🚀 DEBUG: Native prompt failed, showing instructions');
+        setInstallState(prev => ({ 
+          ...prev, 
+          showInstructionsModal: true 
+        }));
       }
     } else {
       // Fallback para quando não há prompt nativo
-      console.log('🚀 DEBUG: No native prompt, showing manual instructions');
+      console.log('🚀 DEBUG: No native prompt available, showing manual instructions');
+      console.log('🚀 DEBUG: Setting showInstructionsModal to true');
       
-      // Mostrar modal de instruções para qualquer dispositivo sem prompt nativo
-      setInstallState(prev => ({ 
-        ...prev, 
-        showInstructionsModal: true 
-      }));
+      // Sempre mostrar modal de instruções quando não há prompt nativo
+      setInstallState(prev => {
+        console.log('🚀 DEBUG: Previous state:', prev.showInstructionsModal);
+        const newState = { 
+          ...prev, 
+          showInstructionsModal: true 
+        };
+        console.log('🚀 DEBUG: New state:', newState.showInstructionsModal);
+        return newState;
+      });
+      
+      // Verificar se realmente mudou
+      setTimeout(() => {
+        console.log('🚀 DEBUG: After timeout, showInstructionsModal is:', installState.showInstructionsModal);
+      }, 100);
     }
   };
 

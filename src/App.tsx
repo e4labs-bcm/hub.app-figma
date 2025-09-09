@@ -323,8 +323,8 @@ function AppContent() {
       <PWAInstallPrompt />
       
       {/* PWA Debug Tools (development only) */}
-      <PWADebugPanel />
-      <PWATestButton />
+      {/* <PWADebugPanel /> */}
+      {/* <PWATestButton /> */}
     </>
   );
 }
