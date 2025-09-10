@@ -1,0 +1,591 @@
+{
+  "_comment": "MANIFEST - MÓDULO MULTIFINS (Financeiro)",
+  "multifins_manifest": {
+    "module_id": "multifins",
+    "name": "Módulo Financeiro",
+    "version": "1.0.0",
+    "description": "Gestão financeira completa para PMEs",
+    "ai_capabilities": {
+      "specialties": [
+        "Gestão de receitas e despesas",
+        "Análise de fluxo de caixa", 
+        "Processamento de extratos bancários",
+        "Relatórios financeiros",
+        "Categorização automática"
+      ],
+      "context_keywords": [
+        "financeiro", "dinheiro", "receita", "despesa", "extrato", 
+        "pagamento", "conta", "fatura", "orçamento", "lucro"
+      ]
+    },
+    "ai_actions": [
+      {
+        "action_id": "multifins-criar-receita",
+        "name": "Criar Receita",
+        "description_for_ai": "Cria uma nova receita no sistema financeiro. Requer valor (obrigatório), data de vencimento (obrigatório), descrição (obrigatório). Opcionalmente pode incluir categoria, cliente associado e observações. Use esta ação quando o usuário mencionar receber dinheiro, faturamento, vendas ou entrada de recursos.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "valor": {
+              "type": "number",
+              "minimum": 0.01,
+              "description": "Valor da receita em reais"
+            },
+            "data_vencimento": {
+              "type": "string",
+              "format": "date",
+              "description": "Data de vencimento no formato YYYY-MM-DD"
+            },
+            "descricao": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "Descrição da receita"
+            },
+            "categoria_id": {
+              "type": "string",
+              "optional": true,
+              "description": "ID da categoria financeira"
+            },
+            "cliente_id": {
+              "type": "string", 
+              "optional": true,
+              "description": "ID do cliente associado (do CRM)"
+            },
+            "observacoes": {
+              "type": "string",
+              "optional": true,
+              "maxLength": 500
+            },
+            "status": {
+              "type": "string",
+              "enum": ["pendente", "pago"],
+              "default": "pendente"
+            }
+          },
+          "required": ["valor", "data_vencimento", "descricao"]
+        },
+        "execution_endpoint": "/api/v1/multifins/receitas",
+        "http_method": "POST",
+        "requires_confirmation": true,
+        "permission_required": "multifins.write"
+      },
+      {
+        "action_id": "multifins-criar-despesa",
+        "name": "Criar Despesa", 
+        "description_for_ai": "Cria uma nova despesa no sistema financeiro. Requer valor, data de vencimento e descrição. Use quando o usuário mencionar gastos, contas a pagar, custos ou saída de dinheiro.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "valor": {
+              "type": "number",
+              "minimum": 0.01
+            },
+            "data_vencimento": {
+              "type": "string",
+              "format": "date"
+            },
+            "descricao": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "categoria_id": {
+              "type": "string",
+              "optional": true
+            },
+            "fornecedor": {
+              "type": "string",
+              "optional": true
+            },
+            "status": {
+              "type": "string",
+              "enum": ["pendente", "pago"],
+              "default": "pendente"
+            }
+          },
+          "required": ["valor", "data_vencimento", "descricao"]
+        },
+        "execution_endpoint": "/api/v1/multifins/despesas",
+        "http_method": "POST", 
+        "requires_confirmation": true,
+        "permission_required": "multifins.write"
+      },
+      {
+        "action_id": "multifins-relatorio-mensal",
+        "name": "Relatório Mensal",
+        "description_for_ai": "Gera relatório financeiro de um mês específico incluindo receitas, despesas, saldo e análise por categorias. Use quando usuário pedir resumo, balanço ou análise financeira de um período.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "ano": {
+              "type": "integer",
+              "minimum": 2020,
+              "maximum": 2030
+            },
+            "mes": {
+              "type": "integer", 
+              "minimum": 1,
+              "maximum": 12
+            },
+            "incluir_graficos": {
+              "type": "boolean",
+              "default": true
+            },
+            "categorias": {
+              "type": "array",
+              "items": {"type": "string"},
+              "optional": true
+            }
+          },
+          "required": ["ano", "mes"]
+        },
+        "execution_endpoint": "/api/v1/multifins/relatorios/mensal",
+        "http_method": "GET",
+        "requires_confirmation": false,
+        "permission_required": "multifins.read"
+      },
+      {
+        "action_id": "multifins-processar-extrato",
+        "name": "Processar Extrato Bancário",
+        "description_for_ai": "Processa um extrato bancário em PDF, extrai transações e permite importação automática. Use quando usuário mencionar extrato, PDF do banco ou importar transações.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "arquivo_pdf": {
+              "type": "string",
+              "format": "file",
+              "description": "Arquivo PDF do extrato bancário"
+            },
+            "banco": {
+              "type": "string",
+              "optional": true,
+              "enum": ["nubank", "itau", "bradesco", "santander", "bb", "outro"]
+            },
+            "auto_categorizar": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "required": ["arquivo_pdf"]
+        },
+        "execution_endpoint": "/api/v1/multifins/extratos/processar",
+        "http_method": "POST",
+        "requires_confirmation": true,
+        "permission_required": "multifins.write"
+      }
+    ],
+    "ai_widgets": [
+      {
+        "widget_id": "multifins-resumo-mensal",
+        "name": "Resumo Financeiro",
+        "description": "Exibe receitas, despesas e saldo do mês atual",
+        "component_url": "/widgets/multifins/resumo-mensal",
+        "size": "medium"
+      },
+      {
+        "widget_id": "multifins-contas-vencer",
+        "name": "Contas a Vencer",
+        "description": "Lista de contas próximas do vencimento",
+        "component_url": "/widgets/multifins/contas-vencer", 
+        "size": "large"
+      }
+    ]
+  },
+
+  "_comment": "MANIFEST - MÓDULO CRM",
+  "crm_manifest": {
+    "module_id": "crm",
+    "name": "CRM - Gestão de Clientes",
+    "version": "1.0.0",
+    "ai_capabilities": {
+      "specialties": [
+        "Gestão de contatos e clientes",
+        "Histórico de interações",
+        "Segmentação de clientes",
+        "Relatórios de vendas"
+      ],
+      "context_keywords": [
+        "cliente", "contato", "lead", "venda", "negociação",
+        "telefone", "email", "empresa", "pessoa"
+      ]
+    },
+    "ai_actions": [
+      {
+        "action_id": "crm-criar-contato",
+        "name": "Criar Contato",
+        "description_for_ai": "Cria um novo contato/cliente no CRM. Requer nome (obrigatório). Opcionalmente aceita telefone, email, empresa, cargo e observações. Use quando usuário mencionar novo cliente, contato ou lead.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "nome": {
+              "type": "string",
+              "maxLength": 100,
+              "description": "Nome completo do contato"
+            },
+            "telefone": {
+              "type": "string",
+              "optional": true,
+              "pattern": "^\\+?[1-9]\\d{1,14}$"
+            },
+            "email": {
+              "type": "string",
+              "optional": true,
+              "format": "email"
+            },
+            "empresa": {
+              "type": "string",
+              "optional": true,
+              "maxLength": 100
+            },
+            "cargo": {
+              "type": "string",
+              "optional": true,
+              "maxLength": 50
+            },
+            "observacoes": {
+              "type": "string",
+              "optional": true,
+              "maxLength": 500
+            },
+            "tipo": {
+              "type": "string",
+              "enum": ["cliente", "lead", "prospect"],
+              "default": "lead"
+            }
+          },
+          "required": ["nome"]
+        },
+        "execution_endpoint": "/api/v1/crm/contatos",
+        "http_method": "POST",
+        "requires_confirmation": true,
+        "permission_required": "crm.write"
+      },
+      {
+        "action_id": "crm-buscar-contato",
+        "name": "Buscar Contato",
+        "description_for_ai": "Busca contatos no CRM por nome, telefone, email ou empresa. Use quando usuário pedir para encontrar, localizar ou buscar um cliente específico.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "termo_busca": {
+              "type": "string",
+              "description": "Nome, telefone, email ou empresa para buscar"
+            },
+            "tipo": {
+              "type": "string",
+              "enum": ["cliente", "lead", "prospect", "todos"],
+              "default": "todos"
+            },
+            "limite": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 50
+            }
+          },
+          "required": ["termo_busca"]
+        },
+        "execution_endpoint": "/api/v1/crm/contatos/buscar",
+        "http_method": "GET",
+        "requires_confirmation": false,
+        "permission_required": "crm.read"
+      },
+      {
+        "action_id": "crm-listar-clientes-aniversario",
+        "name": "Clientes Aniversariantes",
+        "description_for_ai": "Lista clientes que fazem aniversário em uma data específica ou período. Use para campanhas de aniversário ou follow-up personalizado.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "string",
+              "format": "date",
+              "optional": true
+            },
+            "mes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 12,
+              "optional": true
+            },
+            "periodo_dias": {
+              "type": "integer",
+              "default": 7,
+              "description": "Próximos X dias"
+            }
+          }
+        },
+        "execution_endpoint": "/api/v1/crm/contatos/aniversarios",
+        "http_method": "GET",
+        "requires_confirmation": false,
+        "permission_required": "crm.read"
+      }
+    ],
+    "ai_widgets": [
+      {
+        "widget_id": "crm-novos-leads",
+        "name": "Novos Leads",
+        "description": "Últimos leads cadastrados",
+        "component_url": "/widgets/crm/novos-leads",
+        "size": "medium"
+      }
+    ]
+  },
+
+  "_comment": "MANIFEST - MÓDULO AGENDA",
+  "agenda_manifest": {
+    "module_id": "agenda",
+    "name": "Agenda - Gestão de Compromissos",
+    "version": "1.0.0",
+    "ai_capabilities": {
+      "specialties": [
+        "Agendamento de compromissos",
+        "Gestão de calendário",
+        "Lembretes e notificações",
+        "Integração com clientes do CRM"
+      ],
+      "context_keywords": [
+        "agenda", "compromisso", "reunião", "evento", "agendamento",
+        "horário", "calendário", "encontro", "meeting"
+      ]
+    },
+    "ai_actions": [
+      {
+        "action_id": "agenda-criar-evento",
+        "name": "Criar Evento/Compromisso",
+        "description_for_ai": "Cria um novo evento na agenda. Requer título, data e horário. Pode incluir cliente do CRM, duração, localização e observações. Use quando usuário mencionar agendar, marcar reunião ou criar compromisso.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "titulo": {
+              "type": "string",
+              "maxLength": 100,
+              "description": "Título do evento"
+            },
+            "data_inicio": {
+              "type": "string",
+              "format": "datetime",
+              "description": "Data e hora de início no formato ISO"
+            },
+            "data_fim": {
+              "type": "string",
+              "format": "datetime",
+              "optional": true,
+              "description": "Data e hora de fim (se não informado, usa 1h de duração)"
+            },
+            "cliente_id": {
+              "type": "string",
+              "optional": true,
+              "description": "ID do cliente do CRM para associar"
+            },
+            "localizacao": {
+              "type": "string",
+              "optional": true,
+              "maxLength": 200
+            },
+            "observacoes": {
+              "type": "string",
+              "optional": true,
+              "maxLength": 500
+            },
+            "tipo": {
+              "type": "string",
+              "enum": ["reunião", "ligação", "visita", "evento", "outros"],
+              "default": "reunião"
+            },
+            "lembrete_minutos": {
+              "type": "integer",
+              "default": 15,
+              "description": "Lembrete X minutos antes"
+            }
+          },
+          "required": ["titulo", "data_inicio"]
+        },
+        "execution_endpoint": "/api/v1/agenda/eventos",
+        "http_method": "POST",
+        "requires_confirmation": true,
+        "permission_required": "agenda.write"
+      },
+      {
+        "action_id": "agenda-buscar-horarios-livres",
+        "name": "Buscar Horários Livres",
+        "description_for_ai": "Encontra horários disponíveis na agenda em uma data ou período específico. Use quando usuário perguntar sobre disponibilidade ou quiser agendar sem horário definido.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "string",
+              "format": "date",
+              "description": "Data para verificar disponibilidade"
+            },
+            "duracao_minutos": {
+              "type": "integer",
+              "default": 60,
+              "description": "Duração desejada do compromisso"
+            },
+            "horario_inicio": {
+              "type": "string",
+              "default": "08:00",
+              "description": "Horário mínimo (HH:MM)"
+            },
+            "horario_fim": {
+              "type": "string", 
+              "default": "18:00",
+              "description": "Horário máximo (HH:MM)"
+            }
+          },
+          "required": ["data"]
+        },
+        "execution_endpoint": "/api/v1/agenda/horarios-livres",
+        "http_method": "GET",
+        "requires_confirmation": false,
+        "permission_required": "agenda.read"
+      },
+      {
+        "action_id": "agenda-listar-compromissos",
+        "name": "Listar Compromissos",
+        "description_for_ai": "Lista compromissos de uma data específica ou período. Use quando usuário perguntar sobre agenda do dia, semana ou mês.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "data_inicio": {
+              "type": "string",
+              "format": "date",
+              "description": "Data de início"
+            },
+            "data_fim": {
+              "type": "string",
+              "format": "date",
+              "optional": true,
+              "description": "Data de fim (se não informado, mostra apenas o dia)"
+            },
+            "incluir_detalhes": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "required": ["data_inicio"]
+        },
+        "execution_endpoint": "/api/v1/agenda/eventos/listar",
+        "http_method": "GET",
+        "requires_confirmation": false,
+        "permission_required": "agenda.read"
+      }
+    ],
+    "ai_widgets": [
+      {
+        "widget_id": "agenda-proximos-compromissos",
+        "name": "Próximos Compromissos",
+        "description": "Lista dos próximos eventos agendados",
+        "component_url": "/widgets/agenda/proximos-compromissos",
+        "size": "large"
+      }
+    ]
+  },
+
+  "_comment": "MANIFEST - MÓDULO HUB (Geral)",
+  "hub_manifest": {
+    "module_id": "hub",
+    "name": "Hub Central",
+    "version": "1.0.0",
+    "ai_capabilities": {
+      "specialties": [
+        "Navegação geral",
+        "Configurações da conta",
+        "Relatórios consolidados",
+        "Gestão de módulos",
+        "Suporte e ajuda"
+      ],
+      "context_keywords": [
+        "hub", "home", "configuração", "módulo", "ajuda",
+        "navegação", "menu", "dashboard", "relatório geral"
+      ]
+    },
+    "ai_actions": [
+      {
+        "action_id": "hub-relatorio-geral",
+        "name": "Relatório Geral da Empresa",
+        "description_for_ai": "Gera um relatório consolidado com dados de todos os módulos ativos: resumo financeiro, número de clientes, compromissos próximos, etc. Use quando usuário pedir visão geral ou resumo executivo.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "periodo": {
+              "type": "string",
+              "enum": ["hoje", "semana", "mes", "trimestre"],
+              "default": "mes"
+            },
+            "incluir_graficos": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "execution_endpoint": "/api/v1/hub/relatorio-geral",
+        "http_method": "GET",
+        "requires_confirmation": false,
+        "permission_required": "hub.read"
+      },
+      {
+        "action_id": "hub-configurar-notificacoes",
+        "name": "Configurar Notificações",
+        "description_for_ai": "Permite alterar configurações de notificações por email, push e dentro da plataforma. Use quando usuário mencionar notificações, alertas ou comunicações.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "email_enabled": {
+              "type": "boolean",
+              "description": "Ativar notificações por email"
+            },
+            "push_enabled": {
+              "type": "boolean", 
+              "description": "Ativar notificações push"
+            },
+            "tipos_notificacao": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["financeiro", "agenda", "crm", "sistema"]
+              }
+            }
+          }
+        },
+        "execution_endpoint": "/api/v1/hub/configuracoes/notificacoes",
+        "http_method": "PUT",
+        "requires_confirmation": true,
+        "permission_required": "hub.settings"
+      },
+      {
+        "action_id": "hub-navegar-modulo",
+        "name": "Navegar para Módulo",
+        "description_for_ai": "Redireciona usuário para um módulo específico. Use quando usuário pedir para ir, acessar ou abrir um módulo como financeiro, CRM, agenda, etc.",
+        "parameters_schema": {
+          "type": "object",
+          "properties": {
+            "modulo": {
+              "type": "string",
+              "enum": ["multifins", "crm", "agenda", "configuracoes", "appstore"],
+              "description": "Módulo de destino"
+            },
+            "secao": {
+              "type": "string",
+              "optional": true,
+              "description": "Seção específica dentro do módulo"
+            }
+          },
+          "required": ["modulo"]
+        },
+        "execution_endpoint": "/api/v1/hub/navegar",
+        "http_method": "POST",
+        "requires_confirmation": false,
+        "permission_required": "hub.access"
+      }
+    ],
+    "ai_widgets": [
+      {
+        "widget_id": "hub-resumo-atividades",
+        "name": "Resumo de Atividades",
+        "description": "Overview das principais métricas de todos os módulos",
+        "component_url": "/widgets/hub/resumo-atividades",
+        "size": "extra-large"
+      }
+    ]
+  }
+}

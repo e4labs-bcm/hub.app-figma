@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 interface Module {
   id: string;
   nome: string;
+  slug?: string; // Module slug for identification
   descricao: string;
   icone_url?: string;
   icone_lucide?: string;
@@ -18,6 +19,7 @@ interface Module {
   downloads?: string;
   size?: string;
   status: 'active' | 'inactive';
+  manifest?: any; // JSON manifest data
   created_at?: string;
   updated_at?: string;
 }
@@ -107,6 +109,7 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
         return {
           id: module.id,
           nome: module.nome,
+          slug: module.slug, // Include slug for overlay detection
           descricao: module.descricao || module.descricao_longa,
           icone_lucide: iconName,
           categoria: module.categoria,
@@ -118,6 +121,7 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
           size: "10 MB", // Valor padrão
           status: module.status,
           link_destino: module.link_destino,
+          manifest: module.manifest, // Include original manifest data
           installed_at: item.data_instalacao,
           module_status: item.status
         };
@@ -188,6 +192,7 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
         return {
           id: module.id,
           nome: module.nome,
+          slug: module.slug, // Include slug for overlay detection
           descricao: module.descricao || module.descricao_longa,
           icone_lucide: iconName,
           categoria: module.categoria,
@@ -197,7 +202,8 @@ export function ModulesProvider({ children }: { children: ReactNode }) {
           rating: module.avaliacao_media || 4.5,
           downloads: "1K+", // Valor padrão
           size: "10 MB", // Valor padrão
-          status: module.status
+          status: module.status,
+          manifest: module.manifest // Include original manifest data
         };
       });
       

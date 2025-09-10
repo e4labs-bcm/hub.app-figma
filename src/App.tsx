@@ -22,6 +22,7 @@ import { PWAInstallFAB } from "./components/PWAInstallFAB";
 import { PWAWelcomeModal } from "./components/PWAWelcomeModal";
 import { PWAInstallInstructionsModal } from "./components/PWAInstallInstructionsModal";
 import { PWAInstallInstructionsModalSimple } from "./components/PWAInstallInstructionsModalSimple";
+import { OverlayManager } from "./components/OverlayManager";
 import { updateMultiFinsModule, checkMultiFinsModule, fixMultiFinsURL } from "./utils/updateMultiFins";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import { AuthCallback } from "./components/AuthCallback";
@@ -328,6 +329,12 @@ function AppContent() {
       {/* PWA Debug Tools (development only) */}
       {/* <PWADebugPanel /> */}
       {/* <PWATestButton /> */}
+
+      {/* Overlay Manager - Global overlays like AI Agent */}
+      <OverlayManager>
+        {/* All app content is wrapped by OverlayManager for global overlays */}
+        <div style={{ display: 'contents' }} />
+      </OverlayManager>
     </>
   );
 }

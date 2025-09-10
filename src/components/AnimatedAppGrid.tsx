@@ -28,7 +28,8 @@ import {
   Zap,
   Megaphone,
   BarChart3,
-  Truck
+  Truck,
+  Bot
 } from 'lucide-react';
 import { useModules } from '../hooks/useModules';
 import { usePermissions } from '../hooks/usePermissions';
@@ -97,7 +98,7 @@ export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsO
       MessageCircle, Instagram, Youtube, Headphones, CalendarDays, 
       Music, Sparkles, PauseCircle, ShoppingBag, Settings,
       DollarSign, Package, ShoppingCart, UserCheck, ExternalLink,
-      Zap, Megaphone, BarChart3, Truck, Loader2
+      Zap, Megaphone, BarChart3, Truck, Loader2, Bot
     };
     return icons[iconName as keyof typeof icons] || Users;
   };
@@ -169,19 +170,64 @@ export function AnimatedAppGrid({ isSidebar = false, onAppStoreOpen, onSettingsO
         label: module.nome,
         bgColor: getCategoryColor(module.categoria),
         onClick: () => {
-          console.log('🔍 DEBUG: Clicou no módulo:', module.nome);
-          console.log('🔍 DEBUG: Link destino:', module.link_destino);
-          console.log('🔍 DEBUG: onModuleOpen existe?', !!onModuleOpen);
+          console.log('🚀 NOVO DEBUG VERSÃO 3: Clicou no módulo:', module.nome);
+          console.log('🔍 DEBUG: Module completo:', module);
+          console.log('🔍 DEBUG: Module manifest:', module.manifest);
+          console.log('🔍 DEBUG: Module manifest type:', typeof module.manifest);
+          console.log('🔍 DEBUG: Module slug:', module.slug);
+          console.log('🔍 DEBUG: Module link_destino:', module.link_destino);
           
-          if (module.link_destino && onModuleOpen) {
-            console.log('✅ DEBUG: Abrindo módulo no viewer interno');
-            onModuleOpen(module.link_destino, module.nome);
-          } else if (module.link_destino) {
-            console.log('⚠️ DEBUG: Fallback - abrindo em nova aba');
-            window.open(module.link_destino, '_blank');
+          // Check if this is an overlay module
+          let isOverlayModule = false;
+          
+          // First try manifest detection
+          if (module.manifest) {
+            const manifest = typeof module.manifest === 'string' 
+              ? JSON.parse(module.manifest) 
+              : module.manifest;
+            console.log('🔍 DEBUG: Parsed manifest:', manifest);
+            console.log('🔍 DEBUG: manifest.overlay:', manifest?.overlay);
+            console.log('🔍 DEBUG: manifest.global:', manifest?.global);
+            isOverlayModule = manifest?.overlay === true && manifest?.global === true;
+          }
+          
+          // TEMPORARY FIX: Force detection for AI Agent by name
+          if (module.nome.includes('AI Agent') || module.slug === 'ai-agent') {
+            console.log('🚀 FORCING AI Agent as overlay module by name/slug');
+            isOverlayModule = true;
+          }
+          
+          console.log('🔍 DEBUG: isOverlayModule result:', isOverlayModule);
+          console.log('🔍 DEBUG: Module slug:', module.slug);
+          
+          if (isOverlayModule) {
+            console.log('🤖 DEBUG: Overlay module clicked - opening chat overlay');
+            
+            // For AI Agent, trigger the chat overlay
+            if (module.slug === 'ai-agent' || module.nome.includes('AI Agent')) {
+              console.log('🎯 Dispatching openAIChat event for AI Agent');
+              // Dispatch a custom event to open the AI chat
+              window.dispatchEvent(new CustomEvent('openAIChat', { 
+                detail: { moduleName: module.nome } 
+              }));
+            } else {
+              // For other future overlay modules
+              console.log(`🧩 Opening overlay module: ${module.nome}`);
+            }
           } else {
-            console.log('ℹ️ DEBUG: Módulo interno - não implementado ainda');
-            console.log(`Abrir módulo interno: ${module.nome}`);
+            console.log('🔍 DEBUG: Link destino:', module.link_destino);
+            console.log('🔍 DEBUG: onModuleOpen existe?', !!onModuleOpen);
+            
+            if (module.link_destino && onModuleOpen) {
+              console.log('✅ DEBUG: Abrindo módulo no viewer interno');
+              onModuleOpen(module.link_destino, module.nome);
+            } else if (module.link_destino) {
+              console.log('⚠️ DEBUG: Fallback - abrindo em nova aba');
+              window.open(module.link_destino, '_blank');
+            } else {
+              console.log('ℹ️ DEBUG: Módulo interno - não implementado ainda');
+              console.log(`Abrir módulo interno: ${module.nome}`);
+            }
           }
         }
       };
